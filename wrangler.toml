@@ -1,0 +1,22 @@
+name = "aiclub-content-desk"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+
+routes = [{ pattern = "desk.zadok.dev", custom_domain = true }]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aiclub-content"
+database_id = "d5cdd84a-5fa6-47a4-af4f-f9ba52d34e95"
+
+[vars]
+# Open mode: no login. Officers type a name once; anyone with the link can use the desk.
+OPEN_MODE = "true"
+# To add a login later, create a Cloudflare Access app and fill these in (they override open mode):
+TEAM_DOMAIN = ""
+POLICY_AUD  = ""
