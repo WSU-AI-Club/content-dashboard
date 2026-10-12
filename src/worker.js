@@ -1,13 +1,59 @@
-// AI Club Content Desk API. Static desk is served from ./public; /api/* runs here.
-// Auth: Cloudflare Access puts a signed JWT on every request. We verify it, then trust the email in it.
+// AI Club Content Desk: the Worker.
+//
+// It does two jobs:
+//   1. Serves the desk page itself (public/index.html) through Cloudflare's static assets.
+//   2. Answers /api/* so every officer sees the same posts, templates and photos, stored in D1
+//      (the "aiclub-content" database bound as env.DB in wrangler.toml).
+//
+// API
+//   GET    /api/me                      who you are, and whether the desk is in open (no-login) mode
+//   GET    /api/posts[?since=ms]        all posts, or only what changed since a timestamp (for live sync)
+//   PUT    /api/posts/:id               create or save a post. Body {post, baseVersion}
+//   DELETE /api/posts/:id               hide a post for everyone (the row stays, flagged deleted)
+//   GET    /api/templates[?since=ms]    custom templates the club uploaded
+//   PUT    /api/templates/:id           create or save a template. Body {item, baseVersion}
+//   DELETE /api/templates/:id           hide a template (posts already made from it keep working)
+//   POST   /api/images                  upload one image (raw bytes, image/* content type), returns {id, url}
+//   GET    /api/images/:id              read an image back
+//
+// Saving uses optimistic locking: every row has a version number. A save says which version it
+// started from; if someone else saved in between, the save is refused (409) and the desk shows
+// that person's version instead of silently overwriting it.
+//
+// Who is editing: with Cloudflare Access configured (TEAM_DOMAIN + POLICY_AUD in wrangler.toml)
+// the email comes from Access's signed token. In open mode (OPEN_MODE = "true", no login) it is
+// the name the officer typed, which labels changes but proves nothing.
 
-const MAX_IMAGE = 1900000; // D1 caps a BLOB/row near 2 MB
-const MAX_POSTS = 2000, MAX_IMAGES = 3000; // open mode: keeps a vandal from filling the database
-let keyCache = { at: 0, keys: null };
+// ---- limits ----------------------------------------------------------------------------------
+// D1 caps a single row at 2 MB, so images are stored in 1 MB pieces: the first piece in `images`,
+// the rest in `image_parts`. That lets a finished graphic keep its original quality up to 10 MB.
+const CHUNK = 1000000;
+const MAX_IMAGE = 10 * 1024 * 1024;
+// Open mode has no login, so caps keep anyone with the link from filling the database.
+const MAX_IMAGES = 3000;
+const MAX_ITEM_JSON = 900000; // a post or template without its images is a few KB; this is generous
 
+// The two shared collections. Both tables have the same core columns (id, data, version, who and
+// when, deleted); `extra` adds the few columns each one keeps outside the JSON for quick queries.
+const COLLECTIONS = {
+  posts: {
+    table: "posts", max: 2000,
+    extra: p => ({
+      title: String((p.fields && p.fields.headline) || "").slice(0, 200),
+      status: ["draft", "approved", "posted"].includes(p.status) ? p.status : "draft"
+    })
+  },
+  templates: {
+    table: "templates", max: 200,
+    extra: t => ({ name: String(t.name || "").slice(0, 120) })
+  }
+};
+
+// ---- helpers ---------------------------------------------------------------------------------
 const json = (o, status = 200, h = {}) =>
   new Response(JSON.stringify(o), { status, headers: { "content-type": "application/json", "cache-control": "no-store", "x-robots-tag": "noindex", ...h } });
 
+// base64url -> bytes (for reading the Access token)
 function b64u(s) {
   s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
   const bin = atob(s), out = new Uint8Array(bin.length);
@@ -15,6 +61,8 @@ function b64u(s) {
   return out;
 }
 
+// Cloudflare Access signing keys, cached for an hour.
+let keyCache = { at: 0, keys: null };
 async function accessKeys(team) {
   if (keyCache.keys && Date.now() - keyCache.at < 3600e3) return keyCache.keys;
   const r = await fetch(`https://${team}/cdn-cgi/access/certs`);
@@ -24,7 +72,8 @@ async function accessKeys(team) {
   return keys;
 }
 
-// Returns the signed-in email, or null. Fails closed when Access isn't configured.
+// Who is making this request? Returns a name/email, or null to refuse.
+// Fails closed: with no Access settings and open mode off, nobody gets in.
 async function who(req, env) {
   if (!env.TEAM_DOMAIN || !env.POLICY_AUD) {
     if (env.DEV_EMAIL) return env.DEV_EMAIL; // only for `wrangler dev`
@@ -34,6 +83,7 @@ async function who(req, env) {
     }
     return null;
   }
+  // Access mode: verify the RS256 token Access attaches, check its audience and expiry.
   const tok = req.headers.get("Cf-Access-Jwt-Assertion");
   if (!tok) return null;
   try {
@@ -52,11 +102,94 @@ async function who(req, env) {
   } catch (e) { return null; }
 }
 
-const rowToPost = r => {
-  const p = JSON.parse(r.data);
-  return Object.assign(p, { id: r.id, status: r.status, _v: r.version, updated: r.updated_at, updatedBy: r.updated_by, createdBy: r.created_by, created: p.created || r.created_at });
-};
+// A database row -> the object the desk works with. Server-owned fields (version, who, when) are
+// added on top of the stored JSON so the desk can't overwrite them.
+function rowToItem(r) {
+  const o = JSON.parse(r.data);
+  Object.assign(o, { id: r.id, _v: r.version, updated: r.updated_at, updatedBy: r.updated_by, createdBy: r.created_by, created: o.created || r.created_at });
+  if (r.status !== undefined) o.status = r.status;
+  return o;
+}
 
+// ---- collections (posts, templates) ----------------------------------------------------------
+async function list(env, name, url) {
+  const c = COLLECTIONS[name], since = Number(url.searchParams.get("since")) || 0;
+  const { results } = await env.DB.prepare(
+    since ? `SELECT * FROM ${c.table} WHERE updated_at > ? ORDER BY updated_at` : `SELECT * FROM ${c.table} WHERE deleted = 0 ORDER BY updated_at`
+  ).bind(...(since ? [since] : [])).all();
+  // The list is returned under the collection's name ("posts" / "templates") for older pages.
+  return json({ now: Date.now(), [name]: results.filter(r => !r.deleted).map(rowToItem), deleted: results.filter(r => r.deleted).map(r => r.id) });
+}
+
+async function save(env, name, id, req, email) {
+  const c = COLLECTIONS[name], body = await req.json();
+  const item = body.item || body.post, base = Number(body.baseVersion) || 0;
+  if (!item || typeof item !== "object") return json({ error: "Bad request" }, 400);
+  const data = JSON.stringify(item);
+  if (data.length > MAX_ITEM_JSON) return json({ error: "Too large" }, 413);
+  const now = Date.now(), extra = c.extra(item), cols = Object.keys(extra);
+  const cur = await env.DB.prepare(`SELECT * FROM ${c.table} WHERE id = ?`).bind(id).first();
+
+  if (!cur) { // new row
+    const n = await env.DB.prepare(`SELECT COUNT(*) AS n FROM ${c.table}`).first();
+    if (n.n >= c.max) return json({ error: "Limit reached" }, 429);
+    await env.DB.prepare(
+      `INSERT INTO ${c.table} (id,${cols.join(",")},data,version,created_by,updated_by,created_at,updated_at) VALUES (?,${cols.map(() => "?").join(",")},?,1,?,?,?,?)`
+    ).bind(id, ...cols.map(k => extra[k]), data, email, email, now, now).run();
+    return json({ version: 1, updated: now, updatedBy: email });
+  }
+  const conflict = row => json({ error: "conflict", post: rowToItem(row), item: rowToItem(row) }, 409);
+  if (cur.version !== base) return conflict(cur);
+  // Guarded update: only wins if nobody bumped the version since we read it.
+  const r = await env.DB.prepare(
+    `UPDATE ${c.table} SET ${cols.map(k => k + "=?").join(",")},data=?,version=version+1,updated_by=?,updated_at=?,deleted=0 WHERE id=? AND version=?`
+  ).bind(...cols.map(k => extra[k]), data, email, now, id, base).run();
+  if (!r.meta.changes) return conflict(await env.DB.prepare(`SELECT * FROM ${c.table} WHERE id = ?`).bind(id).first());
+  return json({ version: base + 1, updated: now, updatedBy: email });
+}
+
+async function remove(env, name, id, email) {
+  const c = COLLECTIONS[name];
+  await env.DB.prepare(`UPDATE ${c.table} SET deleted=1, version=version+1, updated_by=?, updated_at=? WHERE id=?`).bind(email, Date.now(), id).run();
+  return json({ ok: true });
+}
+
+// ---- images ----------------------------------------------------------------------------------
+async function putImage(env, req, email) {
+  const type = (req.headers.get("content-type") || "").split(";")[0];
+  if (!/^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(type)) return json({ error: "Not an image" }, 415);
+  const buf = new Uint8Array(await req.arrayBuffer());
+  if (buf.byteLength > MAX_IMAGE) return json({ error: "Image too large (10 MB max)" }, 413);
+  const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM images").first();
+  if (n.n >= MAX_IMAGES) return json({ error: "Image limit reached" }, 429);
+  const id = crypto.randomUUID().replace(/-/g, "");
+  const pieces = [];
+  for (let at = 0; at < buf.byteLength || at === 0; at += CHUNK) pieces.push(buf.slice(at, at + CHUNK));
+  // First piece lives on the images row; any others go to image_parts. One batch = all or nothing.
+  const stmts = [env.DB.prepare("INSERT INTO images (id,mime,bytes,size,parts,created_by,created_at) VALUES (?,?,?,?,?,?,?)")
+    .bind(id, type, pieces[0], buf.byteLength, pieces.length, email, Date.now())];
+  for (let i = 1; i < pieces.length; i++) stmts.push(env.DB.prepare("INSERT INTO image_parts (image_id,idx,bytes) VALUES (?,?,?)").bind(id, i, pieces[i]));
+  await env.DB.batch(stmts);
+  return json({ id, url: "/api/images/" + id });
+}
+
+async function getImage(env, id) {
+  const r = await env.DB.prepare("SELECT mime, bytes, size, parts FROM images WHERE id = ?").bind(id).first();
+  if (!r) return new Response("Not found", { status: 404 });
+  const first = new Uint8Array(r.bytes);
+  let bytes = first;
+  if ((r.parts || 1) > 1) { // stitch the pieces back together in order
+    const { results } = await env.DB.prepare("SELECT bytes FROM image_parts WHERE image_id = ? ORDER BY idx").bind(id).all();
+    bytes = new Uint8Array(r.size);
+    bytes.set(first, 0);
+    let at = first.byteLength;
+    for (const p of results) { const b = new Uint8Array(p.bytes); bytes.set(b, at); at += b.byteLength; }
+  }
+  // SVG can carry script; the sandbox header means an uploaded one can never run in the desk's origin.
+  return new Response(bytes, { headers: { "content-type": r.mime, "cache-control": "private, max-age=31536000, immutable", "content-security-policy": "sandbox", "x-content-type-options": "nosniff" } });
+}
+
+// ---- router ----------------------------------------------------------------------------------
 export default {
   async fetch(req, env) {
     const url = new URL(req.url), path = url.pathname;
@@ -71,66 +204,17 @@ export default {
     try {
       if (path === "/api/me" && req.method === "GET") return json({ email, open: !(env.TEAM_DOMAIN && env.POLICY_AUD) && env.OPEN_MODE === "true" });
 
-      if (path === "/api/posts" && req.method === "GET") {
-        const since = Number(url.searchParams.get("since")) || 0;
-        const { results } = await env.DB.prepare(
-          since ? "SELECT * FROM posts WHERE updated_at > ? ORDER BY updated_at" : "SELECT * FROM posts WHERE deleted = 0 ORDER BY updated_at"
-        ).bind(...(since ? [since] : [])).all();
-        return json({
-          now: Date.now(),
-          posts: results.filter(r => !r.deleted).map(rowToPost),
-          deleted: results.filter(r => r.deleted).map(r => r.id)
-        });
-      }
+      // /api/posts and /api/templates share one implementation
+      let m = path.match(/^\/api\/(posts|templates)$/);
+      if (m && req.method === "GET") return await list(env, m[1], url);
+      m = path.match(/^\/api\/(posts|templates)\/([\w-]{3,64})$/);
+      if (m && req.method === "PUT") return await save(env, m[1], m[2], req, email);
+      if (m && req.method === "DELETE") return await remove(env, m[1], m[2], email);
 
-      let m = path.match(/^\/api\/posts\/([\w-]{3,64})$/);
-      if (m && req.method === "PUT") {
-        const id = m[1], body = await req.json(), post = body.post, base = Number(body.baseVersion) || 0;
-        if (!post || typeof post !== "object") return json({ error: "Bad post" }, 400);
-        const data = JSON.stringify(post);
-        if (data.length > 900000) return json({ error: "Post too large" }, 413);
-        const now = Date.now(), title = String((post.fields && post.fields.headline) || "").slice(0, 200);
-        const status = ["draft", "approved", "posted"].includes(post.status) ? post.status : "draft";
-        const cur = await env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first();
-        if (!cur) {
-          const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM posts").first();
-          if (n.n >= MAX_POSTS) return json({ error: "Post limit reached" }, 429);
-          await env.DB.prepare("INSERT INTO posts (id,title,status,data,version,created_by,updated_by,created_at,updated_at) VALUES (?,?,?,?,1,?,?,?,?)")
-            .bind(id, title, status, data, email, email, now, now).run();
-          return json({ version: 1, updated: now, updatedBy: email });
-        }
-        if (cur.version !== base) return json({ error: "conflict", post: rowToPost(cur) }, 409);
-        // Guarded update: only wins if nobody bumped the version since we read it.
-        const r = await env.DB.prepare("UPDATE posts SET title=?,status=?,data=?,version=version+1,updated_by=?,updated_at=?,deleted=0 WHERE id=? AND version=?")
-          .bind(title, status, data, email, now, id, base).run();
-        if (!r.meta.changes) return json({ error: "conflict", post: rowToPost(await env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first()) }, 409);
-        return json({ version: base + 1, updated: now, updatedBy: email });
-      }
-      if (m && req.method === "DELETE") {
-        await env.DB.prepare("UPDATE posts SET deleted=1, version=version+1, updated_by=?, updated_at=? WHERE id=?").bind(email, Date.now(), m[1]).run();
-        return json({ ok: true });
-      }
-
-      if (path === "/api/images" && req.method === "POST") {
-        const type = (req.headers.get("content-type") || "").split(";")[0];
-        if (!/^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(type)) return json({ error: "Not an image" }, 415);
-        const buf = await req.arrayBuffer();
-        if (buf.byteLength > MAX_IMAGE) return json({ error: "Image too large" }, 413);
-        const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM images").first();
-        if (n.n >= MAX_IMAGES) return json({ error: "Image limit reached" }, 429);
-        const id = crypto.randomUUID().replace(/-/g, "");
-        await env.DB.prepare("INSERT INTO images (id,mime,bytes,size,created_by,created_at) VALUES (?,?,?,?,?,?)")
-          .bind(id, type, buf, buf.byteLength, email, Date.now()).run();
-        return json({ id, url: "/api/images/" + id });
-      }
+      if (path === "/api/images" && req.method === "POST") return await putImage(env, req, email);
       m = path.match(/^\/api\/images\/([a-f0-9]{32})$/);
-      if (m && req.method === "GET") {
-        const r = await env.DB.prepare("SELECT mime, bytes FROM images WHERE id = ?").bind(m[1]).first();
-        if (!r) return new Response("Not found", { status: 404 });
-        const bytes = r.bytes instanceof ArrayBuffer ? r.bytes : new Uint8Array(r.bytes).buffer;
-        // SVG can carry script; sandbox it so an uploaded one can never run in the desk's origin.
-        return new Response(bytes, { headers: { "content-type": r.mime, "cache-control": "private, max-age=31536000, immutable", "content-security-policy": "sandbox", "x-content-type-options": "nosniff" } });
-      }
+      if (m && req.method === "GET") return await getImage(env, m[1]);
+
       return json({ error: "Not found" }, 404);
     } catch (e) {
       return json({ error: "Server error" }, 500);

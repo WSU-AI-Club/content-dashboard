@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Club Content Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+/*TOKENS*/
+/*BUNDLE_CSS*/
+
+/* ================= content desk ================= */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--surface)}
+body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--font-sans);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.d-mono{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.d-muted{color:var(--ink-muted)}
+
+.d-bar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.d-bar-in{max-width:1480px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.d-brand{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.d-brand img{height:34px;width:auto;display:block}
+.d-brand span{border-left:1px solid var(--line-strong);padding-left:12px}
+.d-bar-r{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.d-link{background:none;border:0;padding:6px 4px;cursor:pointer;color:var(--ink);font-weight:500;text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.d-wrap{max-width:1480px;margin:0 auto;padding:28px 24px 80px}
+@media (max-width:700px){.d-wrap{padding:20px 16px 64px}.d-bar-in{padding:10px 16px}.d-brand span{display:none}}
+
+.d-h1{font-size:32px;line-height:36px;font-weight:600;letter-spacing:-.02em;margin:0}
+.d-sub{color:var(--ink-muted);margin:6px 0 0;max-width:60ch}
+.d-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.d-head{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+
+.d-chips{display:flex;gap:6px;flex-wrap:wrap}
+.d-chip{border:1px solid var(--line-strong);background:none;border-radius:var(--radius-sm);padding:6px 12px;cursor:pointer;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted)}
+.d-chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+.d-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;margin-top:20px}
+.d-card{background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--radius-md);padding:12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.d-card:hover{border-color:var(--line-strong)}
+.d-thumb{display:flex;justify-content:center;background:var(--surface-sunk);padding:10px;border-radius:var(--radius-sm);min-height:120px;pointer-events:none}
+.d-card b{font-weight:600;font-size:15px;line-height:1.3}
+.d-card small{color:var(--ink-muted);font-size:13px}
+.d-empty{padding:48px 0;color:var(--ink-muted);max-width:52ch}
+
+/* editor */
+.d-ed{display:grid;grid-template-columns:minmax(320px,460px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:980px){.d-ed{grid-template-columns:1fr}.d-side{position:static!important;order:-1}}
+.d-form{display:grid;gap:16px;min-width:0}
+.d-panel{background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px}
+.d-panel h2{font-size:17px;line-height:22px;font-weight:600;margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.d-panel h2 small{font-weight:400;font-size:13px;color:var(--ink-muted)}
+.d-f{display:block;margin-bottom:12px}
+.d-f:last-child{margin-bottom:0}
+.d-f > span{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600;color:var(--ink-muted);margin-bottom:5px}
+.d-f > span em{font-style:normal;font-weight:400}
+.d-in{width:100%;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface-raised);padding:9px 10px;font-size:15px;line-height:1.4}
+.d-in:focus{outline:2px solid var(--focus);outline-offset:0;border-color:transparent}
+textarea.d-in{resize:vertical;min-height:70px}
+.d-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.d-seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--radius-sm);overflow:hidden;flex-wrap:wrap}
+.d-seg button{border:0;background:none;padding:7px 12px;cursor:pointer;font-size:14px;font-weight:500;color:var(--ink-muted)}
+.d-seg button + button{border-left:1px solid var(--line-strong)}
+.d-seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.d-check{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:6px 0}
+.d-check input{width:17px;height:17px;margin:2px 0 0;accent-color:var(--ink);flex:none}
+.d-sub-card{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;background:var(--surface)}
+.d-sub-card header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.d-meta-row{display:grid;grid-template-columns:1fr 1.3fr auto;gap:6px;margin-bottom:6px;align-items:center}
+.d-x{border:0;background:none;cursor:pointer;color:var(--ink-muted);font-size:20px;line-height:1;padding:4px 6px}
+.d-x:hover{color:var(--danger)}
+.d-slot{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:10px}
+.d-slot-th{width:84px;height:84px;border-radius:var(--radius-sm);background:var(--surface-sunk) center/cover no-repeat;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;color:var(--ink-muted);text-align:center}
+.d-slot-info{font-size:12.5px;color:var(--ink-muted);margin-top:6px}
+.d-slot-info.warn{color:var(--danger)}
+.d-zoom{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-muted);margin-top:6px}
+.d-zoom input{flex:1;accent-color:var(--ink)}
+.d-file{position:relative;overflow:hidden}
+.d-file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.d-count{font-size:12px;color:var(--ink-muted);font-weight:400}
+.d-count.over{color:var(--danger);font-weight:600}
+.d-issues{list-style:none;margin:6px 0 0;padding:0;font-size:13px;color:var(--danger)}
+.d-issues li{margin-top:2px}
+
+.d-side{position:sticky;top:78px;display:grid;gap:14px;min-width:0}
+.d-pv-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.d-pv{background:var(--surface-sunk);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:center;align-items:flex-start;min-height:300px;overflow:hidden}
+.d-pv [data-slot]{cursor:grab;touch-action:none}
+.d-pv [data-slot]:hover{outline:6px solid var(--spark);outline-offset:-6px}
+.d-pv.dragging [data-slot]{cursor:grabbing}
+.d-pv.drop [data-slot]{outline:6px dashed var(--spark);outline-offset:-6px}
+.d-hint{font-size:13px;color:var(--ink-muted);margin:0}
+.d-checks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.d-checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
+.d-checks li .aic-tag{flex:none;margin-top:1px}
+.d-ok{color:var(--success);font-size:14px;margin:0}
+.d-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.d-saved{font-size:13px;color:var(--ink-muted)}
+.d-danger{color:var(--danger)!important}
+
+dialog.d-dlg{border:0;padding:0;border-radius:var(--radius-md);background:var(--surface-raised);color:var(--ink);width:min(760px,calc(100% - 32px));box-shadow:var(--shadow-panel,0 12px 32px -18px rgba(0,0,0,.4))}
+dialog.d-dlg::backdrop{background:rgba(11,11,12,.55)}
+.d-dlg-in{padding:22px}
+.d-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px}
+.d-preset{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius-sm);padding:12px 14px;text-align:left;cursor:pointer;display:grid;gap:4px}
+.d-preset:hover{border-color:var(--ink)}
+.d-preset b{font-weight:600}
+.d-preset small{color:var(--ink-muted);font-size:13px;line-height:1.35}
+.d-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--surface);padding:11px 16px;border-radius:var(--radius-md);font-weight:500;font-size:14px;max-width:calc(100% - 32px)}
+.d-banner{background:var(--spark-soft);color:var(--ink);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;margin-bottom:16px}
+#stage{position:fixed;left:-30000px;top:0;pointer-events:none}
+.d-crop-wrap{display:flex;justify-content:center;background:var(--surface-sunk);border-radius:var(--radius-sm);padding:22px;margin-top:14px}
+.d-crop{position:relative;touch-action:none;user-select:none}
+.d-crop-clip{position:absolute;inset:0;overflow:hidden}
+.d-crop-frame{position:absolute;pointer-events:none}
+.d-crop-frame .d-crop-h{pointer-events:auto}
+.d-crop img{display:block;width:100%;height:100%;pointer-events:none}
+.d-crop-box{position:absolute;box-shadow:0 0 0 9999px rgba(11,11,12,.6);outline:2px solid var(--brand-gold);cursor:move;touch-action:none;
+  background-image:linear-gradient(rgba(244,180,0,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(244,180,0,.45) 1px,transparent 1px);background-size:33.333% 33.333%;background-position:-1px -1px}
+.d-crop-h{position:absolute;width:22px;height:22px;background:var(--brand-gold);border:2px solid var(--brand-black);touch-action:none}
+.d-crop-h[data-c="tl"]{left:-11px;top:-11px;cursor:nwse-resize}
+.d-crop-h[data-c="tr"]{right:-11px;top:-11px;cursor:nesw-resize}
+.d-crop-h[data-c="bl"]{left:-11px;bottom:-11px;cursor:nesw-resize}
+.d-crop-h[data-c="br"]{right:-11px;bottom:-11px;cursor:nwse-resize}
+
+/* library filters: status row + category row */
+.d-filterbar{display:grid;gap:8px;justify-items:end}
+@media (max-width:700px){.d-filterbar{justify-items:start}}
+.d-card .d-cat{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted)}
+
+/* format picker, grouped: Social / Screens / File */
+.d-fmts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.d-fmts > span{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted)}
+
+/* New post dialog: one section per category */
+.d-new-top{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.d-sec-h{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin:22px 0 0;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.d-sec-h + .d-presets{margin-top:10px}
+.d-tplcard{position:relative;display:grid}
+.d-tplcard .d-preset{padding-right:64px}
+.d-tplcard .d-tpl-edit{position:absolute;right:8px;top:8px;height:28px;padding:0 8px}
+.d-preset .d-swatch{display:block;width:100%;height:56px;border-radius:3px;background:var(--surface-sunk) center/cover no-repeat;margin-bottom:4px}
+
+/* template editor */
+.d-tpl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:14px;align-items:start}
+@media (max-width:820px){.d-tpl{grid-template-columns:1fr}}
+.d-tpl-pv{background:var(--surface-sunk);border-radius:var(--radius-sm);padding:12px;display:flex;justify-content:center;overflow:hidden}
+.d-bgrow{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.d-bgrow .d-slot-th{width:56px;height:56px}
+.d-bgrow b{font-size:14px}
+.d-bgrow small{display:block;color:var(--ink-muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<header class="d-bar">
+  <div class="d-bar-in">
+    <button class="d-brand" type="button" data-act="home" aria-label="All posts"><img id="brand-logo" alt="AI Club, Wichita State University"><span class="d-mono d-muted">Content desk</span></button>
+    <div class="d-bar-r">
+      <button class="aic-btn aic-btn-primary" type="button" data-act="new">New post</button>
+      <!-- Finished graphics (Canva, Figma...) go straight in as their own post. -->
+      <label class="aic-btn aic-btn-secondary d-file">Upload a graphic<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
+      <!-- Import/Export move posts between desks as a .json backup file; they don't take images. -->
+      <label class="aic-btn aic-btn-quiet d-file" title="Load a .json backup made with Export backup">Import backup<input type="file" accept="application/json,.json" id="import-file" aria-label="Import posts from a backup file"></label>
+      <button class="aic-btn aic-btn-quiet" type="button" data-act="export-all" title="Save every post to a .json backup file">Export backup</button>
+      <button class="d-link" type="button" data-act="theme" id="theme-btn">Dark</button>
+    </div>
+  </div>
+</header>
+
+<main class="d-wrap">
+  <div id="banner" class="d-banner" hidden></div>
+
+  <section id="v-lib">
+    <div class="d-head">
+      <div>
+        <h1 class="d-h1">Posts</h1>
+        <p class="d-sub">Every graphic starts from a brand template. Pick a series, write the words, add photos, and export for Instagram and LinkedIn.</p>
+      </div>
+      <div class="d-filterbar">
+        <div class="d-chips" id="filters" role="group" aria-label="Status">
+          <button class="d-chip" type="button" data-filter="draft" aria-pressed="true">Drafts</button>
+          <button class="d-chip" type="button" data-filter="approved" aria-pressed="false">Approved</button>
+          <button class="d-chip" type="button" data-filter="posted" aria-pressed="false">Posted</button>
+          <button class="d-chip" type="button" data-filter="all" aria-pressed="false">All</button>
+        </div>
+        <!-- filled from CATS at boot -->
+        <div class="d-chips" id="cat-filters" role="group" aria-label="Category"></div>
+      </div>
+    </div>
+    <div class="d-cards" id="cards"></div>
+  </section>
+
+  <section id="v-ed" hidden>
+    <div class="d-head">
+      <div>
+        <button class="d-link" type="button" data-act="home">All posts</button>
+        <h1 class="d-h1" id="ed-title"></h1>
+        <p class="d-sub" id="ed-sub"></p>
+      </div>
+    </div>
+    <div class="d-ed">
+      <div class="d-form" id="form"></div>
+      <aside class="d-side">
+        <div class="d-pv-bar">
+          <div class="d-fmts" id="fmt-seg" role="group" aria-label="Format"></div>
+          <div class="d-actions">
+            <button class="aic-btn aic-btn-primary" type="button" data-act="dl">Download PNG</button>
+            <button class="aic-btn aic-btn-secondary" type="button" data-act="dl-all">All formats</button>
+          </div>
+        </div>
+        <div class="d-pv" id="pv" aria-label="Live preview"></div>
+        <p class="d-hint">Drag a photo to move it inside its frame, scroll to zoom, double-click it for the crop tool, or drop an image file onto a frame. Press Enter in a text box for a new line; leave a blank line for a new paragraph.</p>
+        <section class="d-panel" aria-live="polite">
+          <h2>Checks <small id="checks-n"></small></h2>
+          <p class="d-hint" style="margin:-4px 0 10px">Advice, not a gate. Export any time; approval only needs the review boxes and an approver.</p>
+          <ul class="d-checks" id="checks"></ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<dialog class="d-dlg" id="new-dlg" aria-labelledby="new-title">
+  <div class="d-dlg-in">
+    <div class="d-row" style="justify-content:space-between">
+      <h2 class="d-h1" id="new-title" style="font-size:24px;line-height:28px">New post</h2>
+      <button class="d-x" type="button" data-act="close-new" aria-label="Close">×</button>
+    </div>
+    <p class="d-sub">Pick the series. It sets the template, the ground and the data strip for you.</p>
+    <div class="d-new-top">
+      <label class="aic-btn aic-btn-secondary d-file">Upload a finished graphic<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
+      <button class="aic-btn aic-btn-secondary" type="button" data-act="new-tpl">Add a template</button>
+    </div>
+    <!-- one section per category, built by renderPresets() -->
+    <div id="presets"></div>
+  </div>
+</dialog>
+
+<!-- Template editor: a custom template is an uploaded background + how the brand type sits on it. -->
+<dialog class="d-dlg" id="tpl-dlg" aria-labelledby="tpl-title" style="width:min(1040px,calc(100% - 32px))">
+  <div class="d-dlg-in">
+    <div class="d-row" style="justify-content:space-between">
+      <h2 class="d-h1" id="tpl-title" style="font-size:24px;line-height:28px">Template</h2>
+      <button class="d-x" type="button" data-act="tpl-cancel" aria-label="Close">×</button>
+    </div>
+    <p class="d-sub">Design the background anywhere (Canva, Figma), upload it here, and choose where our type sits on it. Every officer sees saved templates under New post.</p>
+    <div class="d-tpl">
+      <div id="tpl-form"></div>
+      <div style="display:grid;gap:10px;min-width:0">
+        <div class="d-fmts" id="tpl-fmt"></div>
+        <div class="d-tpl-pv" id="tpl-pv" aria-label="Template preview"></div>
+        <p class="d-hint">Preview with sample words. Posts made from this template copy it, so editing the template later doesn't change posts already made.</p>
+      </div>
+    </div>
+    <div class="d-actions" style="margin-top:16px;justify-content:flex-end">
+      <button class="aic-btn aic-btn-quiet d-danger" type="button" data-act="tpl-del" id="tpl-del">Delete template</button>
+      <button class="aic-btn aic-btn-secondary" type="button" data-act="tpl-cancel">Cancel</button>
+      <button class="aic-btn aic-btn-primary" type="button" data-act="tpl-save" id="tpl-save">Save template</button>
+    </div>
+  </div>
+</dialog>
+<dialog class="d-dlg" id="crop-dlg" aria-labelledby="crop-title" style="width:min(900px,calc(100% - 32px))">
+  <div class="d-dlg-in">
+    <div class="d-row" style="justify-content:space-between">
+      <h2 class="d-h1" id="crop-title" style="font-size:24px;line-height:28px">Crop photo</h2>
+      <button class="d-x" type="button" data-act="crop-done" aria-label="Close">×</button>
+    </div>
+    <p class="d-sub" id="crop-sub"></p>
+    <div class="d-crop-wrap"><div class="d-crop" id="crop-area"><div class="d-crop-clip"><img id="crop-img" alt=""><div class="d-crop-box" id="crop-box"></div></div><div class="d-crop-frame" id="crop-frame"><span class="d-crop-h" data-c="tl"></span><span class="d-crop-h" data-c="tr"></span><span class="d-crop-h" data-c="bl"></span><span class="d-crop-h" data-c="br"></span></div></div></div>
+    <div class="d-actions" style="margin-top:14px;justify-content:flex-end">
+      <button class="aic-btn aic-btn-quiet" type="button" data-act="crop-reset">Reset</button>
+      <button class="aic-btn aic-btn-primary" type="button" data-act="crop-done">Done</button>
+    </div>
+  </div>
+</dialog>
+<div class="d-toast" id="toast" role="status" hidden></div>
+<div id="stage" aria-hidden="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>window.AIClubLogos = /*LOGOS*/;</script>
+<script>
+/*BUNDLE_JS*/
+</script>
+<script>
+/*
+ * The content desk app. Map of this script, top to bottom:
+ *   formats ............ every export size (social + campus screens) and what it's for
+ *   templates/series ... T (template components), CATS (categories), PRESETS (built-in series)
+ *   voice check ........ brand-voice rules for headlines and captions
+ *   storage ............ Local (IndexedDB fallback), Remote (/api/posts), Templates (/api/templates)
+ *   post model ......... new posts (blank / blankUpload / fromTemplate), image slots, sizes
+ *   images ............. resizing photos, keeping uploaded graphics at original quality
+ *   library ............ the post list with status + category filters
+ *   editor ............. form panels, live preview, checks, saving
+ *   export ............. PNG at exact pixels via html-to-image, original-file download
+ *   events ............. clicks, typing, uploads, drag-to-crop
+ *   New post dialog / template editor / crop tool / import / boot
+ */
+(function(){
+"use strict";
+if(!window.React || !window.AIClub){
+  document.getElementById("banner").hidden = false;
+  document.getElementById("banner").textContent = "The content desk needs an internet connection the first time it opens, to load its fonts and rendering library. Connect and reload.";
+  return;
+}
+const A = window.AIClub, h = React.createElement;
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const H2I = "https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js";
+
+/* ================= formats ================= */
+// Layout sizes come from the templates themselves (bundle.js), so the two can never disagree.
+const SIZE = A.SIZES;
+// Every place a graphic can go. `out` is the exact PNG size that gets downloaded; screens are laid
+// out at a 1080px-tall design size and scaled down to `out` on export. `file` names the download.
+const FORMATS = {
+  feed:     {label:"Feed 4:5",       group:"Social",  out:[1080,1350], file:"feed-1080x1350",           use:"Instagram and LinkedIn feed posts"},
+  story:    {label:"Story 9:16",     group:"Social",  out:[1080,1920], file:"story-1080x1920",          use:"Instagram stories"},
+  wide:     {label:"LinkedIn wide",  group:"Social",  out:[1200,627],  file:"linkedin-wide-1200x627",   use:"LinkedIn event and link cards"},
+  tv:       {label:"WSU TV",         group:"Screens", out:[1280,720],  file:"wsu-tv-1280x720",          use:"WSU TV"},
+  bigtv:    {label:"Woolsey Big TV", group:"Screens", out:[1920,1080], file:"woolsey-big-tv-1920x1080", use:"the big screen in Woolsey Hall"},
+  blast:    {label:"Shockerblast",   group:"Screens", out:[800,600],   file:"shockerblast-800x600",     use:"the Shockerblast newsletter"},
+  original: {label:"Original file",  group:"File",    out:null,        file:"original",                 use:"the graphic exactly as uploaded"}
+};
+const FMT_LABEL = Object.fromEntries(Object.entries(FORMATS).map(([k, v]) => [k, v.label]));
+const SCREENS = ["tv", "bigtv", "blast"];
+
+/* ================= templates and series ================= */
+// One entry per template component. `formats` = which sizes that template can export.
+const T = {
+  event:   {name:"Event",   comp:"EventPost",   formats:["feed","story","wide"].concat(SCREENS)},
+  speaker: {name:"Speaker", comp:"SpeakerPost", formats:["feed","story"].concat(SCREENS)},
+  general: {name:"General", comp:"GeneralPost", formats:["feed","story"].concat(SCREENS)},
+  recap:   {name:"Recap",   comp:"RecapPost",   formats:["feed","story"].concat(SCREENS)},
+  blank:   {name:"Blank canvas", comp:"BlankPost", formats:["feed","story","wide"].concat(SCREENS)},
+  // A finished graphic made elsewhere, posted as-is (see FinishedPost in bundle.js).
+  upload:  {name:"Finished graphic", comp:"FinishedPost", formats:["original","feed","story","wide"].concat(SCREENS)},
+  // A post made from a club-uploaded custom template (see TemplatePost in bundle.js).
+  custom:  {name:"Custom template", comp:"TemplatePost", formats:["feed","story","wide"].concat(SCREENS)}
+};
+
+/* ================= categories ================= */
+// Every post has one category; it drives the library filter and the sections of the New post dialog.
+// Older posts don't store one, so catOf() falls back to their series' default.
+const CATS = [
+  {k:"event",     name:"Club events", desc:"Anything people can come to."},
+  {k:"news",      name:"News",        desc:"Announcements, recruiting, club updates."},
+  {k:"recap",     name:"Recaps",      desc:"After an event: numbers and thanks."},
+  {k:"highlight", name:"Highlights",  desc:"Photos and moments from sessions."},
+  {k:"other",     name:"Other",       desc:"Blank canvases and anything else."}
+];
+const CAT_NAME = Object.fromEntries(CATS.map(c => [c.k, c.name]));
+
+const M = (...labels) => labels.map(l => ({label:l, value:""}));
+// The built-in series. k = id, t = template, c = default category, f = starting fields.
+const PRESETS = [
+  {k:"speaker-series", c:"event", name:"Speaker Series", desc:"Industry experts. Ivory, 1 to 4 speakers.", t:"speaker", f:{ground:"paper", series:"Speaker series · 01", meta:M("Date","Time","Room"), cta:"RSVP: link in bio", speakers:[{}]}},
+  {k:"panel", c:"event", name:"Panel", desc:"Several speakers on one stage.", t:"speaker", f:{ground:"paper", series:"Panel · 01", meta:M("Date","Time","Room"), cta:"RSVP: link in bio", speakers:[{},{},{}]}},
+  {k:"workflow", c:"event", name:"Workflow Session", desc:"A professional shows how they use AI. Black.", t:"speaker", f:{ground:"ink", series:"Workflow session · 01", meta:M("Date","Time","Tools"), cta:"Open to every major", speakers:[{}]}},
+  {k:"workshop", c:"event", name:"Workshop", desc:"Student-led and hands-on. Black.", t:"event", f:{ground:"ink", series:"Workshop · 01", meta:M("Date","Time","Room"), cta:"RSVP: link in bio"}},
+  {k:"build", c:"event", name:"Project events", desc:"Build nights, hackathons, anything we build. Black.", t:"event", f:{ground:"ink", series:"Project event · 01", meta:M("Dates","Hours","Prizes"), cta:"Sign up: link in bio"}},
+  {k:"partner", c:"event", name:"Partner event", desc:"Co-hosted with an organization, with their logo. Ivory.", t:"event", f:{ground:"paper", series:"Partner event", kicker:"Co-hosted", meta:M("Date","Time","Room"), cta:"RSVP: link in bio", partnerPlace:"footer", partners:[null]}},
+  {k:"open-floor", c:"event", name:"Open Floor", desc:"Ethics, data centers, jobs. Both sides, fairly.", t:"general", f:{ground:"paper", layout:"text", series:"Open floor · 01", meta:M("Date","Time","Format"), cta:"Bring your questions"}},
+  {k:"news", c:"news", name:"Club news", desc:"Recruiting, announcements, anything else.", t:"general", f:{ground:"paper", layout:"text", series:"Club news"}},
+  {k:"recap", c:"recap", name:"Recap", desc:"Two to four real numbers after an event.", t:"recap", f:{ground:"ink", series:"Recap", stats:[{value:"",label:""},{value:"",label:""}], page:"01 / 05"}},
+  {k:"photos", c:"highlight", name:"Session photos", desc:"Pictures from an event: one, a grid or full bleed.", t:"general", f:{ground:"ink", layout:"grid", series:"From the session", images:[null,null,null]}},
+  {k:"blank", c:"other", name:"Blank canvas", desc:"Ground, grid and logo only. Export it and finish in Canva.", t:"blank", f:{ground:"paper", grid:true, header:true, series:""}}
+];
+function catOf(p){ return p.category || ((PRESETS.find(x => x.k === p.preset) || {}).c) || "other"; }
+
+/* ================= voice check (mirrors the brand guide) ================= */
+const BANNED = [
+  [/excited to announce/i,"excited to announce"],[/\bthrilled\b/i,"thrilled"],[/game[- ]?changer/i,"game-changer"],[/revolutioni[sz]/i,"revolutionize"],
+  [/\bunleash/i,"unleash"],[/supercharg/i,"supercharge"],[/cutting[- ]edge/i,"cutting-edge"],[/harness(ing)? the power/i,"harness the power"],
+  [/\bdelv(e|es|ing)\b/i,"delve"],[/\bleverag(e|es|ing)\b/i,"leverage"],[/\bsynerg/i,"synergy"],[/the future of/i,"the future of"],
+  [/don['’]?t miss (out|it)/i,"don't miss out"],[/\bjourney\b/i,"journey"],[/\blandscape\b/i,"landscape"],[/\becosystem/i,"ecosystem"],
+  [/ai[- ]powered/i,"AI-powered"],[/fast[- ]paced world/i,"fast-paced world"],[/buckle up/i,"buckle up"]
+];
+const NUMWORDS = /\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|hundred)\b/i;
+const EMOJI = /\p{Extended_Pictographic}/u;
+const words = s => (String(s || "").trim().match(/\S+/g) || []).length;
+const tags = s => (String(s || "").match(/(^|\s)#\w+/g) || []).length;
+function voice(v, where){
+  const out = []; v = String(v || "");
+  if(!v.trim()) return out;
+  BANNED.forEach(([re, w]) => { if(re.test(v)) out.push({lvl:"error", text:where + " uses “" + w + "”. Say the specific thing instead."}); });
+  return out;
+}
+
+/* ================= state ================= */
+// posts: every post; cur: the one open in the editor; filter/cat: library filters; fmt: preview format.
+// templates: the club's custom templates. slotSizes: photo frame sizes read back from the preview.
+let posts = [], templates = [], cur = null, filter = "draft", cat = "all", fmt = "feed", slotSizes = {}, saveTimer = null, pvRoot = null, pvScale = 0.4, memOnly = false;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+/* ================= storage: IndexedDB, falls back to memory ================= */
+// Only used when the shared desk can't be reached (or the page is opened as a file).
+// Version 2 adds a "templates" store next to "posts".
+const Local = (() => {
+  let p = null;
+  function open(){
+    return p || (p = new Promise((res, rej) => {
+      try{
+        const r = indexedDB.open("aiclub-content-desk", 2);
+        r.onupgradeneeded = () => {
+          const db = r.result;
+          if(!db.objectStoreNames.contains("posts")) db.createObjectStore("posts", {keyPath:"id"});
+          if(!db.objectStoreNames.contains("templates")) db.createObjectStore("templates", {keyPath:"id"});
+        };
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+      }catch(e){ rej(e); }
+    }));
+  }
+  function run(store, mode, fn){
+    return open().then(db => new Promise((res, rej) => {
+      const t = db.transaction(store, mode), q = fn(t.objectStore(store));
+      t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+    }));
+  }
+  return {
+    all:() => run("posts", "readonly", s => s.getAll()), put:v => run("posts", "readwrite", s => s.put(v)), del:id => run("posts", "readwrite", s => s.delete(id)),
+    tAll:() => run("templates", "readonly", s => s.getAll()), tPut:v => run("templates", "readwrite", s => s.put(v)), tDel:id => run("templates", "readwrite", s => s.delete(id))
+  };
+})();
+/* ================= shared desk: Cloudflare Worker + D1, signed in through Cloudflare Access ================= */
+let remote = false, me = "", lastSync = 0, syncT = null;
+const J = {"content-type":"application/json"};
+let deskName = ""; try{ deskName = localStorage.getItem("aiclub-desk-name") || ""; }catch(e){}
+const F = (u, o) => { o = o || {}; o.headers = Object.assign({}, o.headers, deskName ? {"x-desk-name":encodeURIComponent(deskName)} : {}); return fetch(u, o); };
+function askName(){ // open mode has no login, so ask once who is editing
+  return new Promise(res => {
+    const d = document.createElement("dialog"); d.className = "d-dlg"; d.style.width = "min(420px,calc(100% - 32px))";
+    d.innerHTML = '<div class="d-dlg-in" style="display:grid;gap:12px"><h2 style="margin:0;font-size:22px;letter-spacing:-.02em">Who&rsquo;s editing?</h2><p class="d-muted" style="margin:0">Your name shows next to your changes. You only enter it once on this browser.</p><input class="d-in" id="nm" maxlength="40" autocomplete="name" aria-label="Your name" placeholder="First name"><button class="aic-btn aic-btn-primary" type="button" id="nm-ok">Continue</button></div>';
+    document.body.appendChild(d); d.addEventListener("cancel", e => e.preventDefault()); d.showModal();
+    const go = () => { const v = d.querySelector("#nm").value.trim(); if(!v){ d.querySelector("#nm").focus(); return; }
+      deskName = v; try{ localStorage.setItem("aiclub-desk-name", v); }catch(e){} d.close(); d.remove(); res(); };
+    d.querySelector("#nm-ok").onclick = go; d.querySelector("#nm").addEventListener("keydown", e => { if(e.key === "Enter") go(); });
+  });
+}
+// The Worker stores images up to 10 MB. Anything bigger is re-encoded smaller (rare: phone photos
+// are already resized to 2400px when added, so this mostly catches huge finished graphics).
+const MAX_UPLOAD = 9500000;
+async function shrink(blob){
+  let b = blob, q = 0.9, k = 0.85;
+  for(let i = 0; i < 6 && b.size > MAX_UPLOAD; i++){
+    const bm = await createImageBitmap(b), c = document.createElement("canvas");
+    c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+    c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height);
+    b = await new Promise(r => c.toBlob(r, "image/jpeg", q)); q -= 0.05;
+  }
+  return b;
+}
+// Every image object a post or template holds: photos, speaker portraits, partner logos,
+// template backgrounds and uploaded finished graphics.
+function imageRefs(o){
+  const f = o.fields || o, refs = [];
+  (f.images || []).forEach(x => x && refs.push(x));
+  (f.speakers || []).forEach(s => s && s.photo && refs.push(s.photo));
+  (f.partners || []).forEach(x => x && refs.push(x));
+  Object.values(f.bg || {}).forEach(x => x && refs.push(x));
+  return refs;
+}
+// Before saving, move images still held as data: URIs to the shared image store and keep only
+// their URL in the post, so a post stays a few KB however many photos it has.
+async function upImages(o){
+  for(const im of imageRefs(o)){
+    if(!im.src || im.src.indexOf("data:") !== 0) continue;
+    let b = await (await fetch(im.src)).blob();
+    if(b.size > MAX_UPLOAD && b.type !== "image/svg+xml") b = await shrink(b);
+    const r = await F("/api/images", {method:"POST", headers:{"content-type":b.type || "image/jpeg"}, body:b});
+    if(!r.ok) throw new Error("image upload " + r.status);
+    im.src = (await r.json()).url;
+  }
+}
+// Drop fields the server owns (version, who) and desk-only scratch fields (anything starting "_").
+const clean = p => JSON.parse(JSON.stringify(p, (k, v) => (k[0] === "_" || k === "createdBy" || k === "updatedBy") ? undefined : v));
+
+// Custom templates: same save pattern as posts, under /api/templates. In local mode they live in IndexedDB.
+const Templates = {
+  async all(){
+    if(!remote) return (await Local.tAll()) || [];
+    const r = await F("/api/templates"); if(!r.ok) throw new Error("templates"); return (await r.json()).templates || [];
+  },
+  async put(t){
+    if(!remote){ await Local.tPut(t); return; }
+    await upImages(t);
+    const r = await F("/api/templates/" + t.id, {method:"PUT", headers:J, body:JSON.stringify({item:clean(t), baseVersion:t._v || 0})});
+    if(r.status === 409){ const j = await r.json(); throw Object.assign(new Error("Someone else changed this template. Close it and open it again."), {server:j.item}); }
+    if(!r.ok) throw new Error("Couldn't save the template (" + r.status + ").");
+    const j = await r.json(); t._v = j.version; t.updatedBy = j.updatedBy; if(!t.createdBy && j.version === 1) t.createdBy = j.updatedBy;
+  },
+  async del(id){
+    if(!remote){ await Local.tDel(id); return; }
+    const r = await F("/api/templates/" + id, {method:"DELETE"}); if(!r.ok) throw new Error("Couldn't delete the template.");
+  }
+};
+async function loadTemplates(){ try{ templates = await Templates.all(); }catch(e){ /* keep what we had */ } }
+const Remote = {
+  async probe(){ const r = await F("/api/me"); if(!r.ok || !/json/.test(r.headers.get("content-type") || "")) throw new Error("no api"); const j = await r.json(); me = j.email || ""; if(j.open){ if(!deskName) await askName(); me = deskName; } },
+  async all(){ const r = await F("/api/posts"); if(!r.ok) throw new Error("load"); const j = await r.json(); lastSync = j.now; return j.posts; },
+  async put(p){
+    await upImages(p);
+    const r = await F("/api/posts/" + p.id, {method:"PUT", headers:J, body:JSON.stringify({post:clean(p), baseVersion:p._v || 0})});
+    if(r.status === 409){ const j = await r.json(); throw Object.assign(new Error("conflict"), {server:j.post}); }
+    if(!r.ok) throw new Error("save " + r.status);
+    const j = await r.json(); p._v = j.version; p.updatedBy = j.updatedBy; if(!p.createdBy && j.version === 1) p.createdBy = j.updatedBy;
+  },
+  async del(id){ const r = await F("/api/posts/" + id, {method:"DELETE"}); if(!r.ok) throw new Error("delete"); }
+};
+const DB = {all:() => (remote ? Remote : Local).all(), put:v => (remote ? Remote : Local).put(v), del:id => (remote ? Remote : Local).del(id)};
+function adopt(sp){ // take the server's copy of a post
+  const i = posts.findIndex(x => x.id === sp.id);
+  if(i >= 0) posts[i] = sp; else posts.push(sp);
+  if(cur && cur.id === sp.id){ cur = sp; open(sp.id); } else if(!cur) renderLib();
+}
+async function persist(post){
+  if(memOnly) return true;
+  try{ await DB.put(post); return true; }
+  catch(e){
+    if(remote){
+      if(e.server){ clearTimeout(saveTimer); adopt(e.server); toast("Someone else just changed this post. You're now looking at their version."); }
+      else toast("Couldn't reach the shared desk. This change isn't saved yet; it retries on your next edit.");
+      return false;
+    }
+    memOnly = true; banner("This browser won't let the desk save. Posts last until you close the tab, so use Export posts to keep them."); return false;
+  }
+}
+async function sync(){
+  if(!remote || document.hidden) return;
+  try{
+    const r = await F("/api/posts?since=" + lastSync); if(!r.ok) return;
+    const j = await r.json(); lastSync = j.now;
+    j.deleted.forEach(id => {
+      if(!posts.some(x => x.id === id)) return;
+      posts = posts.filter(x => x.id !== id);
+      if(cur && cur.id === id){ cur = null; toast("Someone deleted the post you had open."); show("lib"); }
+    });
+    j.posts.forEach(sp => {
+      const mine = posts.find(x => x.id === sp.id);
+      if(mine && (mine._v || 0) >= sp._v) return;
+      if(cur && cur.id === sp.id && saveTimer) return; // you're typing; your save will reconcile
+      adopt(sp);
+    });
+    if(!cur) renderLib();
+  }catch(e){}
+}
+async function moveLocal(){
+  let n = 0;
+  try{
+    for(const p of (await Local.all()) || []){
+      if(posts.some(x => x.id === p.id)) { await Local.del(p.id); continue; }
+      p._v = 0; try{ await Remote.put(p); posts.push(p); await Local.del(p.id); n++; }catch(e){ if(!e.server) throw e; }
+    }
+    toast("Moved " + n + (n === 1 ? " draft" : " drafts") + " to the shared desk.");
+  }catch(e){ toast("Couldn't move your drafts. They're still safe in this browser."); }
+  $("banner").hidden = true; renderLib();
+}
+
+/* ================= helpers ================= */
+function get(obj, path){ return path.split(".").reduce((o, k) => o == null ? undefined : o[k], obj); }
+function set(obj, path, v){
+  const ks = path.split("."), last = ks.pop();
+  const o = ks.reduce((o, k, i) => { if(o[k] == null) o[k] = /^\d+$/.test(ks[i + 1] || last) ? [] : {}; return o[k]; }, obj);
+  o[last] = v;
+}
+let toastT = null;
+function toast(t){ const el = $("toast"); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 3000); }
+function banner(t){ const b = $("banner"); b.textContent = t; b.hidden = false; }
+function ago(t){
+  const m = Math.floor((Date.now() - t) / 60000);
+  if(m < 1) return "just now"; if(m < 60) return m + " min ago";
+  const hr = Math.floor(m / 60); if(hr < 24) return hr + (hr === 1 ? " hour ago" : " hours ago");
+  return new Date(t).toLocaleDateString("en-US", {month:"short", day:"numeric"});
+}
+function nm(s){ return String(s || "").split("@")[0]; }
+function slug(s){ return String(s || "post").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "post"; }
+function download(blob, name){
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+function copy(text, btn){
+  const done = () => { const t = btn.textContent; btn.textContent = "Copied"; setTimeout(() => { btn.textContent = t; }, 1400); };
+  try{ navigator.clipboard.writeText(text).then(done, () => toast("Couldn't copy. Select the text and copy it.")); }
+  catch(e){ toast("Couldn't copy. Select the text and copy it."); }
+}
+
+/* ================= post model ================= */
+// The parts every post shares, whatever its template.
+function shell(template, preset, category, fields){
+  return {id:uid(), template, preset, category, status:"draft", created:Date.now(), updated:Date.now(),
+    fields, captions:{linkedin:"", instagram:"", alt:""}, review:{facts:false, tagged:false, consent:false, by:""}};
+}
+// A new post from a built-in series.
+function blank(preset){
+  const f = JSON.parse(JSON.stringify(preset.f));
+  f.headline = f.headline || ""; f.kicker = f.kicker || ""; f.dek = f.dek || "";
+  if(preset.t === "speaker"){ f.speakers = (f.speakers || [{}]).map(() => ({name:"", role:"", photo:null})); f.bw = true; f.bleed = false; }
+  if(preset.t === "general"){ f.images = f.images || [null]; f.bw = false; }
+  f.partners = f.partners || []; f.partnerPlace = f.partnerPlace || "none";
+  return shell(preset.t, preset.k, preset.c, f);
+}
+// A new post holding a finished graphic. headline is only the post's name in the desk.
+function blankUpload(img, name){
+  return shell("upload", "upload", "other", {headline:name || "", fit:"cover", ground:"ink", images:[img || null], partners:[], partnerPlace:"none"});
+}
+// A new post from a custom template. The template is copied in, so later edits or deleting the
+// template never change posts already made from it.
+function fromTemplate(t){
+  const f = {
+    ground:t.ground || "ink", textPos:t.textPos || "bottom", header:t.header !== false, scrim:!!t.scrim,
+    bg:JSON.parse(JSON.stringify(t.bg || {})), bgMain:t.bgMain || mainBg(t),
+    series:t.series || "", kicker:"", headline:"", dek:"", cta:t.cta || "", page:"",
+    meta:t.strip ? M("Date","Time","Room") : [], partners:[], partnerPlace:"none"
+  };
+  const p = shell("custom", "tpl:" + t.id, t.category || "other", f);
+  p.tplId = t.id; p.tplName = t.name;
+  return p;
+}
+// The template's default background: the feed one if there is one, else the first uploaded.
+function mainBg(t){ const bg = (t.fields || t).bg || {}; return bg.feed ? "feed" : Object.keys(bg).find(k => bg[k]) || ""; }
+
+// What a template component receives: the post's fields plus format and preview scale.
+function props(p, format, scale){
+  const f = p.fields;
+  return Object.assign({}, f, {format, scale, images:(f.images || []).map(x => x || null), speakers:(f.speakers || []).map(s => Object.assign({}, s))});
+}
+// Image slots are addressed by a key: "speakers.0", "images.1", "partners.2" or "bg.feed".
+function imgAt(key, p){
+  const f = (p || cur).fields, [kind, i] = key.split(".");
+  if(kind === "partners") return (f.partners || [])[i];
+  if(kind === "bg") return (f.bg || {})[i];
+  return kind === "speakers" ? ((f.speakers || [])[i] || {}).photo : (f.images || [])[i];
+}
+function setImg(key, v){
+  const f = cur.fields, [kind, i] = key.split(".");
+  if(kind === "partners") f.partners[i] = v;
+  else if(kind === "bg"){ f.bg = f.bg || {}; if(v) f.bg[i] = v; else delete f.bg[i]; if(!f.bg[f.bgMain]) f.bgMain = mainBg(f); }
+  else if(kind === "speakers") f.speakers[i].photo = v; else f.images[i] = v;
+}
+function formats(p){ return T[p.template].formats; }
+function title(p){
+  return String(p.fields.headline || "").split("\n")[0] || p.tplName || (p.template === "upload" ? "Finished graphic" : "") ||
+    (PRESETS.find(x => x.k === p.preset) || {}).name || "Untitled";
+}
+// Layout size (what the template is drawn at) and export size (the PNG you download) for a format.
+function dims(p, f){
+  if(f === "original"){ const im = (p.fields.images || [])[0]; return im && im.w ? [im.w, im.h] : SIZE.feed; }
+  return SIZE[f] || SIZE.feed;
+}
+function outSize(p, f){ return (FORMATS[f] && FORMATS[f].out) || dims(p, f); }
+
+/* ================= images ================= */
+function loadImage(file){
+  return new Promise((res, rej) => {
+    if(!file || !/^image\//.test(file.type)) return rej(new Error("That isn't an image file."));
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const max = 2400, s = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(im.naturalWidth * s); c.height = Math.round(im.naturalHeight * s);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      res({src:c.toDataURL("image/jpeg", 0.9), w:c.width, h:c.height, x:50, y:40, zoom:1});
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Couldn't read that image.")); };
+    im.src = url;
+  });
+}
+function loadLogo(file){
+  return new Promise((res, rej) => {
+    if(!file || !/^image\//.test(file.type)) return rej(new Error("That isn't an image file."));
+    const r = new FileReader();
+    r.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        let src = r.result;
+        if(file.type !== "image/svg+xml" && Math.max(im.naturalWidth, im.naturalHeight) > 1200){
+          const k = 1200 / Math.max(im.naturalWidth, im.naturalHeight), c = document.createElement("canvas");
+          c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); src = c.toDataURL("image/png");
+        }
+        res({src, name:file.name.replace(/\.[a-z0-9]+$/i, ""), tone:"original"});
+      };
+      im.onerror = () => rej(new Error("Couldn't read that logo."));
+      im.src = r.result;
+    };
+    r.onerror = () => rej(new Error("Couldn't read that logo."));
+    r.readAsDataURL(file);
+  });
+}
+// Finished graphics and template backgrounds keep the file exactly as designed (no resize, no
+// re-compression) so text in them stays sharp. Only files over the 10 MB storage limit, or formats
+// a browser can't store, are re-encoded.
+function loadOriginal(file){
+  return new Promise((res, rej) => {
+    if(!file || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return rej(new Error("Use a PNG, JPG, WebP or GIF file."));
+    const r = new FileReader();
+    r.onload = () => {
+      const im = new Image();
+      im.onload = async () => {
+        let src = r.result;
+        if(file.size > MAX_UPLOAD){ // too big to store as-is: re-encode, keeping the full pixel size if possible
+          const b = await shrink(file);
+          src = await new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); });
+        }
+        res({src, w:im.naturalWidth, h:im.naturalHeight, x:50, y:50, zoom:1, name:file.name, mime:file.type});
+      };
+      im.onerror = () => rej(new Error("Couldn't read that image."));
+      im.src = r.result;
+    };
+    r.onerror = () => rej(new Error("Couldn't read that image."));
+    r.readAsDataURL(file);
+  });
+}
+async function putImage(key, file){
+  try{
+    if(key.startsWith("partners.")){ const old = imgAt(key) || {}; const v = await loadLogo(file); if(old.name) v.name = old.name; setImg(key, v); }
+    else if(key.startsWith("bg.") || cur.template === "upload") setImg(key, await loadOriginal(file));
+    else setImg(key, await loadImage(file));
+    changed(true);
+  }
+  catch(e){ toast(e.message); }
+}
+// How much an image gets stretched to fill its frame. Over 1.15 it starts to look soft.
+function softness(img, slot){
+  if(!img || !img.w || !slot) return 0;
+  return Math.max(slot.w / img.w, slot.h / img.h) * (img.zoom || 1);
+}
+// Which formats share an uploaded graphic's shape (within 1%), i.e. show it with nothing cropped.
+function sameShape(im){
+  const r = im.w / im.h;
+  return Object.keys(FORMATS).filter(k => FORMATS[k].out && Math.abs(FORMATS[k].out[0] / FORMATS[k].out[1] - r) / r < 0.01);
+}
+function sizeAdvice(im){
+  const same = sameShape(im);
+  return same.length ? "Same shape as " + same.map(k => FMT_LABEL[k]).join(", ") + ", so nothing is cropped there."
+    : "No standard format has this shape, so the other formats crop its edges (or pick Show the whole graphic).";
+}
+
+/* ================= library ================= */
+const thumbRoots = [];
+function renderLib(){
+  thumbRoots.splice(0).forEach(r => { try{ r.unmount(); }catch(e){} });
+  document.querySelectorAll("#filters [data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filter === filter)));
+  // category chips, with a count per category for the current status filter
+  const byStatus = posts.filter(p => filter === "all" || p.status === filter);
+  $("cat-filters").innerHTML = [{k:"all", name:"All categories"}].concat(CATS).map(c => {
+    const n = c.k === "all" ? byStatus.length : byStatus.filter(p => catOf(p) === c.k).length;
+    return '<button class="d-chip" type="button" data-cat-filter="' + c.k + '" aria-pressed="' + (c.k === cat) + '">' + esc(c.name) + ' ' + n + '</button>';
+  }).join("");
+  const list = byStatus.filter(p => cat === "all" || catOf(p) === cat).sort((a, b) => b.updated - a.updated);
+  const box = $("cards");
+  if(!list.length){
+    box.innerHTML = '<p class="d-empty">' + (filter === "draft" && cat === "all" ? "No drafts yet. Start one with New post, or upload a finished graphic." : "Nothing here yet.") + "</p>";
+    return;
+  }
+  box.innerHTML = list.map(p => {
+    const tone = p.status === "approved" ? "spark" : p.status === "posted" ? "success" : "neutral";
+    return '<button class="d-card" type="button" data-open="' + p.id + '"><span class="d-thumb" data-thumb="' + p.id + '"></span>' +
+      '<span class="d-cat">' + esc(CAT_NAME[catOf(p)] || "Other") + '</span>' +
+      '<b>' + esc(title(p)) + '</b><small>' + esc((p.tplName || T[p.template].name) + (p.fields.series ? " · " + p.fields.series : "")) + '</small>' +
+      '<span class="d-row"><span class="aic-tag aic-tag-' + tone + '">' + p.status + '</span><small>' + (p.createdBy ? esc(nm(p.createdBy)) + ' · ' : '') + ago(p.updated) + '</small></span></button>';
+  }).join("");
+  list.forEach(p => {
+    const el = box.querySelector('[data-thumb="' + p.id + '"]');
+    const r = ReactDOM.createRoot(el); thumbRoots.push(r);
+    r.render(h(A[T[p.template].comp], props(p, "feed", 0.19)));
+  });
+}
+function show(view){
+  $("v-lib").hidden = view !== "lib"; $("v-ed").hidden = view !== "ed";
+  if(view === "lib"){ cur = null; renderLib(); }
+  window.scrollTo(0, 0);
+}
+
+/* ================= editor: form ================= */
+function field(label, path, opts){
+  opts = opts || {};
+  const v = get(cur, path) || "";
+  const count = opts.count ? '<em class="d-count" data-count="' + path + '"></em>' : "";
+  const input = opts.rows
+    ? '<textarea class="d-in" rows="' + opts.rows + '" data-f="' + path + '"' + (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : "") + '>' + esc(v) + '</textarea>'
+    : '<input class="d-in" data-f="' + path + '" value="' + esc(v) + '"' + (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : "") + (opts.max ? ' maxlength="' + opts.max + '"' : "") + '>';
+  return '<label class="d-f"><span>' + label + count + '</span>' + input + '<ul class="d-issues" data-issues="' + path + '"></ul></label>';
+}
+function seg(name, opts, curv){
+  return '<div class="d-seg" role="group">' + opts.map(o => '<button type="button" data-seg="' + name + '" data-v="' + o[0] + '" aria-pressed="' + (o[0] === curv) + '">' + o[1] + '</button>').join("") + '</div>';
+}
+function slotHTML(key, label){
+  const im = imgAt(key);
+  const th = im ? '<span class="d-slot-th" style="background-image:url(\'' + im.src + '\')"></span>' : '<span class="d-slot-th">No photo</span>';
+  return '<div class="d-slot">' + th + '<div>' +
+    '<div class="d-row"><label class="aic-btn aic-btn-secondary d-file" style="height:34px">' + (im ? "Replace" : "Add " + label) +
+      '<input type="file" accept="image/*" data-upload="' + key + '" aria-label="Upload ' + esc(label) + '"></label>' +
+      (im ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="crop" data-key="' + key + '" style="height:34px">Crop</button><button class="aic-btn aic-btn-quiet" type="button" data-act="img-rm" data-key="' + key + '">Remove</button>' : '') + '</div>' +
+    (im ? '<div class="d-zoom"><span>Zoom</span><input type="range" min="1" max="3" step="0.01" value="' + (im.zoom || 1) + '" data-zoom="' + key + '" aria-label="Zoom ' + esc(label) + '"></div>' : '') +
+    '<p class="d-slot-info" data-slotinfo="' + key + '"></p></div></div>';
+}
+function renderForm(){
+  const p = cur, f = p.fields, t = p.template;
+  $("ed-title").textContent = title(p);
+  $("ed-sub").textContent = T[t].name + " template · " + p.status.charAt(0).toUpperCase() + p.status.slice(1) + " · updated " + ago(p.updated) + (p.createdBy ? " · created by " + nm(p.createdBy) : "") + (p.updatedBy && p.updatedBy !== p.createdBy ? " · last edit by " + nm(p.updatedBy) : "");
+  let html = "";
+
+  // look (+ category, which every post has)
+  const bleed = (t === "general" && f.layout === "full") || (t === "speaker" && f.bleed && f.speakers.length === 1);
+  const catSelect = '<label class="d-f" style="margin-top:12px"><span>Category</span><select class="d-in" data-cat aria-label="Category">' +
+    CATS.map(c => '<option value="' + c.k + '"' + (catOf(p) === c.k ? " selected" : "") + '>' + esc(c.name) + '</option>').join("") + '</select></label>';
+  if(t === "upload"){
+    html += '<section class="d-panel"><h2>Look</h2><div class="d-row">' +
+      seg("fit", [["cover","Fill the frame"],["contain","Show the whole graphic"]], f.fit || "cover") + '</div>' +
+      (f.fit === "contain" ? '<div class="d-row" style="margin-top:10px"><span class="d-muted" style="font-size:14px">Edges</span>' + seg("ground", [["paper","Ivory"],["ink","Black"]], f.ground) + '</div>' : '') +
+      '<p class="d-hint" style="margin-top:10px">' + (f.fit === "contain" ? "The whole graphic shows; any space left over is filled with the brand ground." : "Fills each format edge to edge. If the shapes differ, the edges are cropped: drag the graphic in the preview to choose what stays.") +
+      ' Original file keeps it exactly as uploaded.</p>' + catSelect + '</section>';
+  }else if(t === "custom"){
+    html += '<section class="d-panel"><h2>Look <small>from “' + esc(p.tplName || "custom template") + '”</small></h2><div class="d-row">' +
+      seg("ground", [["ink","Ivory text"],["paper","Dark text"]], f.ground) + '</div><div class="d-row" style="margin-top:10px">' +
+      seg("textPos", [["bottom","Bottom"],["center","Middle"],["top","Top"],["none","No text"]], f.textPos) + '</div>' +
+      '<label class="d-check" style="margin-top:12px"><input type="checkbox" data-f="fields.header"' + (f.header ? " checked" : "") + '>Club logo header</label>' +
+      '<label class="d-check"><input type="checkbox" data-f="fields.scrim"' + (f.scrim ? " checked" : "") + '>Shade the background behind the words</label>' + catSelect + '</section>';
+  }else{
+    html += '<section class="d-panel"><h2>Look</h2><div class="d-row">' +
+      (bleed ? '<span class="d-muted" style="font-size:14px">Full bleed: ivory type on the photo.</span>' : seg("ground", [["paper","Ivory"],["ink","Black"]], f.ground)) +
+      (t === "general" ? seg("layout", [["photo","Photo"],["grid","Grid"],["full","Full bleed"],["text","Text"]], f.layout) : "") + '</div>' +
+      (t === "speaker" || t === "general" ? '<label class="d-check" style="margin-top:12px"><input type="checkbox" data-f="fields.bw"' + (f.bw ? " checked" : "") + '>Black-and-white photos</label>' : "") +
+      (t === "speaker" && f.speakers.length === 1 ? '<label class="d-check"><input type="checkbox" data-f="fields.bleed"' + (f.bleed ? " checked" : "") + '>Full-bleed portrait</label>' : "") +
+      (t === "blank" ? '<label class="d-check" style="margin-top:12px"><input type="checkbox" data-f="fields.grid"' + (f.grid ? " checked" : "") + '>Ledger grid</label>' +
+        '<label class="d-check"><input type="checkbox" data-f="fields.header"' + (f.header ? " checked" : "") + '>Logo header</label>' : "") +
+      catSelect + '</section>';
+  }
+
+  // words
+  if(t === "upload") html += '<section class="d-panel"><h2>Name</h2>' + field("Name in the desk (not on the graphic)", "fields.headline", {ph:"Fall kickoff flyer", max:80}) +
+    '<p class="d-hint">The desk can’t read words inside an uploaded graphic, so it can’t check them. Proofread it before you approve it.</p></section>';
+  else if(t === "custom" && f.textPos === "none") html += '<section class="d-panel"><h2>Words <small>background only</small></h2>' +
+    field("Name in the desk", "fields.headline", {ph:"What this post is", max:80}) +
+    '<div class="d-2">' + field("Series eyebrow", "fields.series", {max:40}) + field("Footer call to action", "fields.cta", {max:40}) + '</div></section>';
+  else if(t === "blank") html += '<section class="d-panel"><h2>Words <small>all optional</small></h2>' + field("Series eyebrow", "fields.series", {ph:"Anything, or leave empty", max:40}) +
+    '<div class="d-2">' + field("Footer left", "fields.cta", {max:40}) + field("Footer right", "fields.page", {max:10}) + '</div>' +
+    '<p class="d-hint">Everything else is empty on purpose. Download it and finish it in Canva; keep the 72px margins clear.</p></section>';
+  else html += '<section class="d-panel"><h2>Words</h2>' +
+    '<div class="d-2">' + field("Series", "fields.series", {ph:"Workshop · 03", max:40}) + field("Kicker", "fields.kicker", {ph:"Tuesday · no experience needed", max:40}) + '</div>' +
+    field(t === "speaker" ? "Headline (talk title)" : "Headline", "fields.headline", {rows:2, count:true}) +
+    (t === "event" || t === "general" || t === "custom" ? field("Dek, one sentence", "fields.dek", {rows:2, count:true}) : "") +
+    '<div class="d-2">' + field("Footer call to action", "fields.cta", {ph:"RSVP: link in bio", max:40}) + field("Slide counter", "fields.page", {ph:"01 / 05", max:10}) + '</div></section>';
+
+  // photos
+  if(t === "speaker"){
+    html += '<section class="d-panel"><h2>Speakers <small>' + f.speakers.length + ' of 4</small></h2>' +
+      f.speakers.map((s, i) => '<div class="d-sub-card"><header><b>Speaker ' + (i + 1) + '</b>' +
+        (f.speakers.length > 1 ? '<button class="d-x" type="button" data-act="spk-rm" data-i="' + i + '" aria-label="Remove speaker ' + (i + 1) + '">×</button>' : '') + '</header>' +
+        slotHTML("speakers." + i, "photo") +
+        '<div class="d-2">' + field("Name", "fields.speakers." + i + ".name", {max:40}) + field("Title · organization", "fields.speakers." + i + ".role", {max:60}) + '</div></div>').join("") +
+      (f.speakers.length < 4 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="spk-add">Add speaker</button>' : '') + '</section>';
+  }
+  if(t === "general" && f.layout !== "text"){
+    const n = f.layout === "grid" ? f.images.length : 1;
+    html += '<section class="d-panel"><h2>Photos' + (f.layout === "grid" ? ' <small>' + n + ' of 4</small>' : '') + '</h2>' +
+      Array.from({length:n}, (_, i) => slotHTML("images." + i, f.layout === "grid" ? "photo " + (i + 1) : "photo") +
+        (f.layout === "grid" && n > 2 ? '<p style="margin:-4px 0 12px"><button class="aic-btn aic-btn-quiet" type="button" data-act="img-slot-rm" data-i="' + i + '">Remove slot ' + (i + 1) + '</button></p>' : '')).join("") +
+      (f.layout === "grid" && n < 4 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="img-add">Add photo slot</button>' : '') + '</section>';
+  }
+  if(t === "recap"){
+    html += '<section class="d-panel"><h2>Numbers <small>' + f.stats.length + ' of 4</small></h2>' +
+      f.stats.map((s, i) => '<div class="d-meta-row"><input class="d-in" data-f="fields.stats.' + i + '.value" value="' + esc(s.value) + '" placeholder="42" aria-label="Number ' + (i + 1) + '" maxlength="6">' +
+        '<input class="d-in" data-f="fields.stats.' + i + '.label" value="' + esc(s.label) + '" placeholder="Builders" aria-label="Label ' + (i + 1) + '" maxlength="24">' +
+        (f.stats.length > 2 ? '<button class="d-x" type="button" data-act="stat-rm" data-i="' + i + '" aria-label="Remove number ' + (i + 1) + '">×</button>' : '<span></span>') + '</div>').join("") +
+      (f.stats.length < 4 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="stat-add">Add number</button>' : '') + '</section>';
+  }
+
+  if(t === "upload"){
+    const im = f.images[0];
+    html += '<section class="d-panel"><h2>Your graphic</h2>' + slotHTML("images.0", "graphic") +
+      (im && im.w ? '<p class="d-hint">Uploaded at ' + im.w + ' × ' + im.h + ' px' + (im.name ? ' (' + esc(im.name) + ')' : '') + '. ' + sizeAdvice(im) + '</p>' +
+        '<div class="d-actions" style="margin-top:10px"><button class="aic-btn aic-btn-secondary" type="button" data-act="dl-original">Download original file</button></div>' : '') + '</section>';
+  }
+  if(t === "custom"){
+    // One background per format; a format without its own borrows the template's main one.
+    const own = (f.bg || {})[fmt], main = f.bgMain && f.bg[f.bgMain];
+    html += '<section class="d-panel"><h2>Background <small>' + esc(FMT_LABEL[fmt]) + '</small></h2>' + slotHTML("bg." + fmt, "background for " + FMT_LABEL[fmt]) +
+      (!own && main ? '<p class="d-hint">No background made for ' + esc(FMT_LABEL[fmt]) + ' yet, so the ' + esc(FMT_LABEL[f.bgMain]) + ' one is cropped to fit. Add one sized ' + outSize(cur, fmt).join(" × ") + ' px for the best result.</p>' : '') + '</section>';
+  }
+
+  if(t !== "upload") html += partnerPanel();
+
+  // data strip
+  if(t !== "recap" && t !== "blank" && t !== "upload" && !(t === "custom" && f.textPos === "none")){
+    const meta = f.meta || [];
+    html += '<section class="d-panel"><h2>Data strip <small>' + meta.length + ' of 4</small></h2>' +
+      (meta.length ? '' : '<p class="d-hint" style="margin-bottom:10px">Optional on this template.</p>') +
+      meta.map((m, i) => '<div class="d-meta-row"><input class="d-in" data-f="fields.meta.' + i + '.label" value="' + esc(m.label) + '" placeholder="Date" aria-label="Label ' + (i + 1) + '" maxlength="14">' +
+        '<input class="d-in" data-f="fields.meta.' + i + '.value" value="' + esc(m.value) + '" placeholder="Thu, Oct 8" aria-label="Value ' + (i + 1) + '" maxlength="24">' +
+        '<button class="d-x" type="button" data-act="meta-rm" data-i="' + i + '" aria-label="Remove cell ' + (i + 1) + '">×</button></div>').join("") +
+      (meta.length < 4 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="meta-add">Add cell</button>' : '') + '</section>';
+  }
+
+  // captions
+  html += '<section class="d-panel"><h2>Captions</h2>' +
+    capField("LinkedIn", "captions.linkedin", 6, "60 to 150 words. What, who (tagged), what members get, then logistics.") +
+    capField("Instagram", "captions.instagram", 5, "First line carries the post in 125 characters. Then the facts, then “RSVP: link in bio.”") +
+    capField("Alt text", "captions.alt", 2, "The headline, then what the image shows.") + '</section>';
+
+  // review
+  const r = p.review;
+  html += '<section class="d-panel"><h2>Review</h2>' +
+    '<label class="d-check"><input type="checkbox" data-f="review.facts"' + (r.facts ? " checked" : "") + '>Every name, title, date, time and room checked against its source</label>' +
+    '<label class="d-check"><input type="checkbox" data-f="review.tagged"' + (r.tagged ? " checked" : "") + '>Speakers and partners tagged, spelled the way they spell themselves</label>' +
+    (t === "speaker" ? '<label class="d-check"><input type="checkbox" data-f="review.consent"' + (r.consent ? " checked" : "") + '>Every speaker has approved the graphic</label>' : '') +
+    '<div style="margin-top:12px">' + field("Approved by (a second officer)", "review.by", {max:40, ph:"Name"}) + '</div>' +
+    '<div class="d-actions" style="margin-top:4px">' +
+      (p.status === "draft" ? '<button class="aic-btn aic-btn-primary" type="button" data-act="approve">Approve</button>' : '') +
+      (p.status === "approved" ? '<button class="aic-btn aic-btn-primary" type="button" data-act="posted">Mark as posted</button>' : '') +
+      (p.status !== "draft" ? '<button class="aic-btn aic-btn-quiet" type="button" data-act="to-draft">Back to drafts</button>' : '') +
+      '<button class="aic-btn aic-btn-secondary" type="button" data-act="dup">Duplicate</button>' +
+      '<button class="aic-btn aic-btn-quiet d-danger" type="button" data-act="del">Delete</button>' +
+      '<span class="d-saved" id="saved"></span></div></section>';
+
+  $("form").innerHTML = html;
+  updateCounts();
+}
+function partnerPanel(){
+  const f = cur.fields, list = f.partners || [], place = f.partnerPlace || "none";
+  const ground = f.ground === "ink" ? "#0b0b0c" : "#f5f2ea";
+  return '<section class="d-panel"><h2>Partner logos <small>' + list.length + ' of 3, optional</small></h2>' +
+    '<div class="d-row" style="margin-bottom:12px">' + seg("partnerPlace", [["none","Off"],["header","Next to our logo"],["footer","Footer row"]], place) + '</div>' +
+    (place === "footer" ? field("Footer label", "fields.partnerLabel", {ph:"In partnership with", max:32}) : "") +
+    list.map((lg, i) => '<div class="d-sub-card"><header><b>Logo ' + (i + 1) + '</b><button class="d-x" type="button" data-act="partner-rm" data-i="' + i + '" aria-label="Remove logo ' + (i + 1) + '">×</button></header>' +
+      '<div class="d-slot"><span class="d-slot-th" style="' + (lg ? "background:" + ground + " url('" + lg.src + "') center/70% no-repeat" : "") + '">' + (lg ? "" : "No logo") + '</span><div>' +
+      '<label class="aic-btn aic-btn-secondary d-file" style="height:34px">' + (lg ? "Replace" : "Add logo") + '<input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" data-upload="partners.' + i + '" aria-label="Upload partner logo ' + (i + 1) + '"></label>' +
+      (lg ? '<div style="margin-top:8px">' + seg("tone." + i, [["original","Original"],["white","White"],["black","Black"]], lg.tone || "original") + '</div>' : '') + '</div></div>' +
+      (lg ? field("Organization name (alt text)", "fields.partners." + i + ".name", {max:60}) : '') + '</div>').join("") +
+    (list.length < 3 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="partner-add">Add partner logo</button>' : '') +
+    '<p class="d-hint" style="margin-top:10px">Use a PNG with a transparent background, or an SVG. Full color on ivory; switch it to White on black.</p></section>';
+}
+function capField(label, path, rows, hint){
+  return '<div class="d-f"><span>' + label + '<em class="d-count" data-count="' + path + '"></em></span>' +
+    '<textarea class="d-in" rows="' + rows + '" data-f="' + path + '" placeholder="' + esc(hint) + '">' + esc(get(cur, path) || "") + '</textarea>' +
+    '<div class="d-row" style="margin-top:4px"><button class="aic-btn aic-btn-quiet" type="button" data-copy="' + path + '" style="height:28px;padding:0 6px">Copy</button></div>' +
+    '<ul class="d-issues" data-issues="' + path + '"></ul></div>';
+}
+function updateCounts(){
+  const f = cur.fields, c = cur.captions;
+  const setC = (path, text, over) => { const el = document.querySelector('[data-count="' + path + '"]'); if(el){ el.textContent = text; el.classList.toggle("over", !!over); } };
+  const hw = words(f.headline); setC("fields.headline", hw + " of 12 words", hw > 12);
+  const dw = words(f.dek); setC("fields.dek", dw + " of 25 words", dw > 25);
+  const lw = words(c.linkedin); setC("captions.linkedin", lw + " words", c.linkedin && (lw < 60 || lw > 150));
+  const first = String(c.instagram || "").split("\n")[0].length; setC("captions.instagram", "first line " + first + " of 125", first > 125);
+  setC("captions.alt", String(c.alt || "").length + " characters", false);
+}
+
+/* ================= editor: preview ================= */
+// Format picker, grouped (Social / Screens / File). Each button's tooltip says what it's for and
+// the exact pixel size it downloads at.
+function fmtButtons(list, current, attr){
+  const groups = [];
+  list.forEach(k => { const g = FORMATS[k].group; let grp = groups.find(x => x.g === g); if(!grp) groups.push(grp = {g, ks:[]}); grp.ks.push(k); });
+  return groups.map(grp => '<span>' + grp.g + '</span><div class="d-seg">' + grp.ks.map(k => {
+    const o = FORMATS[k].out, tip = FORMATS[k].use + (o ? ", " + o[0] + " × " + o[1] + " px" : "");
+    return '<button type="button" ' + attr + '="' + k + '" aria-pressed="' + (k === current) + '" title="' + esc(tip) + '">' + FMT_LABEL[k] + '</button>';
+  }).join("") + '</div>').join("");
+}
+function renderFmt(){
+  const fs = formats(cur);
+  if(!fs.includes(fmt)) fmt = fs[0];
+  $("fmt-seg").innerHTML = fmtButtons(fs, fmt, "data-fmt");
+}
+let pvRaf = 0;
+function renderPreview(){
+  cancelAnimationFrame(pvRaf);
+  pvRaf = requestAnimationFrame(() => {
+    if(!cur) return;
+    const box = $("pv"), [w, hgt] = dims(cur, fmt);
+    const avail = box.clientWidth - 32, maxH = Math.max(420, window.innerHeight - 260);
+    pvScale = Math.max(0.2, Math.min(avail / w, maxH / hgt, 0.75));
+    if(!pvRoot) pvRoot = ReactDOM.createRoot(box);
+    pvRoot.render(h(A[T[cur.template].comp], props(cur, fmt, pvScale)));
+    setTimeout(afterPreview, 30);
+  });
+}
+function afterPreview(){
+  if(!cur) return;
+  // Photo frame sizes in EXPORTED pixels (screens are laid out bigger than they export, so scale by k).
+  slotSizes = {};
+  const k = outSize(cur, fmt)[0] / dims(cur, fmt)[0];
+  $("pv").querySelectorAll("[data-slot]").forEach(el => { slotSizes[el.dataset.slot] = {w:Math.round(el.offsetWidth * k), h:Math.round(el.offsetHeight * k)}; });
+  document.querySelectorAll("[data-slotinfo]").forEach(el => {
+    const key = el.dataset.slotinfo, s = slotSizes[key], im = imgAt(key);
+    if(!s){ el.textContent = ""; return; }
+    const soft = softness(im, s);
+    el.classList.toggle("warn", soft > 1.15);
+    // Photos get zoomed and cropped, so ask for 2x. Finished graphics and backgrounds just need to cover the frame.
+    const exact = cur.template === "upload" || key.startsWith("bg."), bw = exact ? s.w : s.w * 2, bh = exact ? s.h : s.h * 2;
+    el.textContent = "Frame " + s.w + " × " + s.h + " px in " + FMT_LABEL[fmt] + ". Best: " + bw + " × " + bh + " or larger." +
+      (im && im.w ? " Yours: " + im.w + " × " + im.h + (soft > 1.15 ? ", too small at this zoom, it will look soft." : ".") : "");
+  });
+  renderChecks();
+}
+
+/* ================= checks ================= */
+function collect(){
+  const p = cur, f = p.fields, c = p.captions, t = p.template, out = [];
+  const add = (lvl, text, path) => out.push({lvl, text, path});
+  const isFloor = /open floor/i.test(f.series || "");
+  const wordless = t === "blank" || t === "upload" || (t === "custom" && f.textPos === "none"); // no headline on the graphic
+  if(!wordless && !String(f.headline || "").trim()) add("error", "Add a headline.", "fields.headline");
+  // finished graphic: is it there, does it fit this format, is it big enough
+  if(t === "upload"){
+    const im = f.images[0];
+    if(!im) add("error", "Upload your graphic.", "images.0");
+    else if(fmt !== "original" && im.w){
+      const [ow, oh] = outSize(cur, fmt), shapeOff = Math.abs(im.w / im.h - ow / oh) / (ow / oh) > 0.01;
+      if(shapeOff && f.fit !== "contain") add("warn", "Your graphic is " + im.w + " × " + im.h + "; " + FMT_LABEL[fmt] + " is " + ow + " × " + oh + ", so its edges are cropped here. Drag it to choose what stays, or pick Show the whole graphic.", "images.0");
+      if(shapeOff && f.fit === "contain") add("warn", "Your graphic doesn't have the " + FMT_LABEL[fmt] + " shape, so it sits on a band of " + (f.ground === "paper" ? "ivory" : "black") + ".", "images.0");
+    }
+  }
+  // custom template: a background must exist; say when this format borrows another one
+  if(t === "custom"){
+    const bg = f.bg || {};
+    if(!Object.keys(bg).some(k => bg[k])) add("error", "This post has no background. Upload one under Background.", "bg." + fmt);
+    else if(!bg[fmt]) add("warn", "No background made for " + FMT_LABEL[fmt] + "; the " + FMT_LABEL[f.bgMain] + " one is cropped to fit.", "bg." + fmt);
+  }
+  (f.partners || []).forEach((lg, i) => { if(!lg) add("warn", "Partner logo " + (i + 1) + " is empty.", "partners." + i); });
+  // Words ON the graphic. Skipped when the post has none (blank canvas, finished graphic, background-only
+  // template): there "headline" is just the post's name in the desk.
+  const onGraphic = wordless ? "" : [f.headline, f.dek, f.kicker].join(" ");
+  if(!wordless){
+    const hw = words(f.headline);
+    if(hw > 12) add("error", "Headline is " + hw + " words. Keep it to 12.", "fields.headline");
+    if(/\?/.test(f.headline) && !isFloor) add("warn", "Headlines are statements. Only Open Floor posts ask questions.", "fields.headline");
+    const hws = String(f.headline || "").split(/\s+/).slice(1).filter(x => /^[A-Za-z]{4,}/.test(x));
+    if(hws.length >= 3 && hws.filter(x => /^[A-Z]/.test(x)).length / hws.length > .6) add("warn", "Headline looks like Title Case. Use sentence case.", "fields.headline");
+  }
+  if(/!/.test(onGraphic)) add("error", "No exclamation marks on graphics.", "fields.headline");
+  if(EMOJI.test(onGraphic + " " + (f.series || ""))) add("error", "No emoji on graphics.", "fields.headline");
+  if(NUMWORDS.test(onGraphic)) add("warn", "Write numbers as digits.", "fields.headline");
+  if(words(f.dek) > 25) add("warn", "Dek is over 25 words.", "fields.dek");
+  (wordless ? [] : [["fields.headline","Headline"],["fields.dek","Dek"],["fields.kicker","Kicker"]]).concat([["captions.linkedin","LinkedIn caption"],["captions.instagram","Instagram caption"]])
+    .forEach(([path, name]) => voice(get(p, path), name).forEach(i => add(i.lvl, i.text, path)));
+  if(t === "speaker") f.speakers.forEach((s, i) => {
+    if(!s.photo) add("error", "Speaker " + (i + 1) + " has no photo.", "speakers." + i);
+    if(!String(s.name || "").trim()) add("error", "Speaker " + (i + 1) + " has no name.", "fields.speakers." + i + ".name");
+  });
+  if(t === "general" && f.layout !== "text") (f.layout === "grid" ? f.images : f.images.slice(0, 1)).forEach((im, i) => { if(!im) add("error", "Photo " + (i + 1) + " is empty.", "images." + i); });
+  Object.keys(slotSizes).forEach(k => { const im = imgAt(k); if(softness(im, slotSizes[k]) > 1.15) add("warn", "A photo is smaller than its frame and will look soft. Use a larger file or zoom out.", k); });
+  (f.meta || []).forEach((m, i) => { if((m.label || m.value) && !(m.label && m.value)) add("warn", "Data strip cell " + (i + 1) + " needs a label and a value.", "fields.meta." + i + ".value"); });
+  if(t === "recap" && f.stats.filter(s => s.value).length < 2) add("error", "Add at least two real numbers.", "fields.stats.0.value");
+  // layout fit, read from the live preview
+  const post = $("pv").querySelector(".aic-post");
+  if(post){
+    // Overflow: does anything inside the main area end below it? (Screens use a 2-column grid,
+    // so check every child, not just the last one.)
+    const main = post.querySelector(".aic-main");
+    const box = main && main.getBoundingClientRect();
+    // bottom-aligned content overflows upward, so check both edges
+    const over = main && [...main.children].some(el => { const r = el.getBoundingClientRect(); return r.bottom > box.bottom + 2 || r.top < box.top - 2; });
+    if(over) add("error", "Text doesn't fit the " + FMT_LABEL[fmt] + " format. Shorten the headline or dek, or drop a data-strip cell.", "fields.headline");
+    post.querySelectorAll(".aic-strip dd").forEach(dd => { if(dd.scrollWidth > dd.clientWidth + 1) add("warn", "A data-strip value is cut off. Shorten it (“Thu, Oct 8”).", "fields.meta.0.value"); });
+  }
+  // captions
+  if(c.linkedin){
+    const lw = words(c.linkedin);
+    if(lw < 60 || lw > 150) add("warn", "LinkedIn caption is " + lw + " words. Aim for 60 to 150.", "captions.linkedin");
+    if(tags(c.linkedin) > 3) add("warn", "LinkedIn takes 3 hashtags at most.", "captions.linkedin");
+    if(EMOJI.test(c.linkedin)) add("warn", "No emoji on LinkedIn.", "captions.linkedin");
+    if((c.linkedin.match(/!/g) || []).length > 1) add("warn", "One exclamation mark at most.", "captions.linkedin");
+  }
+  if(c.instagram){
+    if(c.instagram.split("\n")[0].length > 125) add("warn", "Instagram cuts the first line at 125 characters.", "captions.instagram");
+    if(tags(c.instagram) > 5) add("warn", "Instagram: 5 hashtags at most.", "captions.instagram");
+    if((c.instagram.match(EMOJI) ? [...c.instagram].filter(ch => EMOJI.test(ch)).length : 0) > 1) add("warn", "One emoji at most, and only if it carries information.", "captions.instagram");
+    if((c.instagram.match(/!/g) || []).length > 1) add("warn", "One exclamation mark at most.", "captions.instagram");
+  }
+  if(!String(c.alt || "").trim()) add("warn", "Write alt text before posting.", "captions.alt");
+  return out;
+}
+function renderChecks(){
+  if(!cur) return;
+  const list = collect();
+  cur._flags = list.filter(x => x.lvl === "error").length;
+  const errs = cur._flags, warns = list.length - errs;
+  $("checks-n").textContent = list.length ? errs + " to fix, " + warns + " to consider" : "";
+  $("checks").innerHTML = list.length ? list.map(x => '<li><span class="aic-tag aic-tag-' + (x.lvl === "error" ? "danger" : "spark") + '">' + (x.lvl === "error" ? "Fix" : "Check") + '</span><span>' + esc(x.text) + '</span></li>').join("")
+    : '<li class="d-ok">On brand. Nothing to fix.</li>';
+  document.querySelectorAll("[data-issues]").forEach(ul => {
+    const mine = list.filter(x => x.path === ul.dataset.issues);
+    ul.innerHTML = mine.map(x => "<li>" + esc(x.text) + "</li>").join("");
+  });
+}
+
+/* ================= changes and saving ================= */
+function changed(structural){
+  cur.updated = Date.now();
+  if(structural) renderForm(); else updateCounts();
+  renderPreview();
+  const s = $("saved"); if(s) s.textContent = "Saving…";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => { const ok = await persist(cur); const s2 = $("saved"); if(s2) s2.textContent = ok ? "Saved" : "Not saved"; }, 500);
+}
+function open(id){
+  cur = posts.find(p => p.id === id); if(!cur) return;
+  fmt = "feed";
+  show("ed"); renderFmt(); renderForm(); renderPreview();
+}
+// Add a new post (from blank(), blankUpload() or fromTemplate()) and open it.
+async function create(p){
+  posts.push(p); await persist(p);
+  if($("new-dlg").open) $("new-dlg").close();
+  open(p.id);
+}
+// "Upload a graphic": the chosen file becomes a new post, named after the file.
+async function createUpload(file){
+  try{
+    const img = await loadOriginal(file);
+    const p = blankUpload(img, file.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "));
+    // open on the format that matches the file's shape, if any
+    await create(p);
+    const same = sameShape(img).filter(k => formats(p).includes(k));
+    fmt = same[0] || "original"; renderFmt(); renderForm(); renderPreview();
+  }catch(e){ toast(e.message || "Couldn't add that graphic."); }
+}
+
+/* ================= New post dialog ================= */
+// Built-in series and the club's custom templates, grouped by category.
+function renderPresets(){
+  const presetBtn = p => '<button class="d-preset" type="button" data-preset="' + p.k + '"><span class="d-mono d-muted">' + T[p.t].name + '</span><b>' + esc(p.name) + '</b><small>' + esc(p.desc) + '</small></button>';
+  const tplBtn = t => {
+    const bg = (t.bg || {})[mainBg(t)];
+    return '<div class="d-tplcard"><button class="d-preset" type="button" data-tpl="' + t.id + '">' +
+      (bg ? '<span class="d-swatch" style="background-image:url(\'' + esc(bg.src) + '\')"></span>' : '') +
+      '<span class="d-mono d-muted">Custom template</span><b>' + esc(t.name || "Untitled template") + '</b><small>' + esc(t.desc || "") + '</small></button>' +
+      '<button class="aic-btn aic-btn-quiet d-tpl-edit" type="button" data-tpl-edit="' + t.id + '">Edit</button></div>';
+  };
+  $("presets").innerHTML = CATS.map(c => {
+    const items = PRESETS.filter(p => p.c === c.k).map(presetBtn).concat(templates.filter(t => (t.category || "other") === c.k).map(tplBtn));
+    return items.length ? '<h3 class="d-sec-h">' + esc(c.name) + '</h3><div class="d-presets">' + items.join("") + '</div>' : '';
+  }).join("");
+}
+
+/* ================= template editor ================= */
+// tplDraft is a working copy; nothing is saved until "Save template".
+let tplDraft = null, tplFmt = "feed", tplRoot = null;
+function openTplEditor(id){
+  const t = id ? templates.find(x => x.id === id) : null;
+  tplDraft = t ? JSON.parse(JSON.stringify(t)) :
+    {id:uid(), name:"", desc:"", category:"event", ground:"ink", textPos:"bottom", header:true, scrim:true, strip:true, series:"", bg:{}};
+  tplDraft._v = t ? t._v : 0;
+  tplFmt = mainBg(tplDraft) || "feed";
+  $("tpl-title").textContent = t ? "Edit template" : "New template";
+  $("tpl-del").hidden = !t;
+  if($("new-dlg").open) $("new-dlg").close();
+  renderTplEditor();
+  $("tpl-dlg").showModal();
+  requestAnimationFrame(renderTplPreview); // now the dialog has a real width to size the preview to
+}
+function renderTplEditor(){
+  const d = tplDraft, fs = T.custom.formats;
+  const opt = (v, cur, label) => '<option value="' + v + '"' + (v === cur ? " selected" : "") + '>' + esc(label) + '</option>';
+  const tseg = (name, opts, curv) => '<div class="d-seg" role="group">' + opts.map(o => '<button type="button" data-tseg="' + name + '" data-v="' + o[0] + '" aria-pressed="' + (o[0] === curv) + '">' + o[1] + '</button>').join("") + '</div>';
+  $("tpl-form").innerHTML =
+    '<label class="d-f"><span>Template name</span><input class="d-in" data-t="name" value="' + esc(d.name) + '" maxlength="60" placeholder="Hackathon 2026 poster"></label>' +
+    '<label class="d-f"><span>One-line description</span><input class="d-in" data-t="desc" value="' + esc(d.desc) + '" maxlength="90" placeholder="What it\'s for"></label>' +
+    '<div class="d-2"><label class="d-f"><span>Category</span><select class="d-in" data-t="category">' + CATS.map(c => opt(c.k, d.category, c.name)).join("") + '</select></label>' +
+    '<label class="d-f"><span>Series eyebrow</span><input class="d-in" data-t="series" value="' + esc(d.series || "") + '" maxlength="40" placeholder="Hackathon · 2026"></label></div>' +
+    '<div class="d-f"><span>Words</span><div class="d-row">' + tseg("ground", [["ink","Ivory text"],["paper","Dark text"]], d.ground) + '</div>' +
+    '<div class="d-row" style="margin-top:8px">' + tseg("textPos", [["bottom","Bottom"],["center","Middle"],["top","Top"],["none","No text"]], d.textPos) + '</div></div>' +
+    '<label class="d-check"><input type="checkbox" data-t="header"' + (d.header ? " checked" : "") + '>Club logo header</label>' +
+    '<label class="d-check"><input type="checkbox" data-t="scrim"' + (d.scrim ? " checked" : "") + '>Shade the background behind the words</label>' +
+    '<label class="d-check"><input type="checkbox" data-t="strip"' + (d.strip ? " checked" : "") + '>Data strip (date, time, room)</label>' +
+    '<div class="d-f" style="margin-top:14px"><span>Backgrounds <em>at least one</em></span>' +
+    fs.map(k => {
+      const im = d.bg[k], o = FORMATS[k].out, ok = im && im.w ? Math.abs(im.w / im.h - o[0] / o[1]) / (o[0] / o[1]) < 0.01 : true;
+      return '<div class="d-bgrow"><span class="d-slot-th" style="' + (im ? "background-image:url('" + esc(im.src) + "')" : "") + '">' + (im ? "" : "None") + '</span>' +
+        '<div><b>' + FMT_LABEL[k] + '</b><small>' + o[0] + ' × ' + o[1] + ' px' + (im && im.w ? ' · yours ' + im.w + ' × ' + im.h + (ok ? '' : ', wrong shape: it will be cropped') : (k === mainBg(d) ? '' : ' · borrows the main one')) + '</small></div>' +
+        '<div class="d-row"><label class="aic-btn aic-btn-secondary d-file" style="height:32px">' + (im ? "Replace" : "Upload") + '<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-tpl-upload="' + k + '" aria-label="Background for ' + FMT_LABEL[k] + '"></label>' +
+        (im ? '<button class="d-x" type="button" data-act="tpl-bg-rm" data-k="' + k + '" aria-label="Remove ' + FMT_LABEL[k] + ' background">×</button>' : '') + '</div></div>';
+    }).join("") +
+    '<p class="d-hint" style="margin-top:8px">Upload one for the feed at least. Any format without its own background borrows the main one and crops it to fit.</p></div>';
+  // preview format picker: every format, so officers can see the borrowed crops too
+  if(!fs.includes(tplFmt)) tplFmt = "feed";
+  $("tpl-fmt").innerHTML = fmtButtons(fs, tplFmt, "data-tfmt");
+  renderTplPreview();
+}
+function renderTplPreview(){
+  if(!tplDraft) return;
+  const d = tplDraft, box = $("tpl-pv"), [w, hgt] = SIZE[tplFmt];
+  const availW = Math.min((box.clientWidth || 444) - 24, 460), sc = Math.max(0.1, Math.min(availW / w, 440 / hgt));
+  const sample = {format:tplFmt, scale:sc, ground:d.ground, textPos:d.textPos, header:d.header, scrim:d.scrim, bg:d.bg, bgMain:mainBg(d),
+    series:d.series || "Series · 01", kicker:"Kicker line", headline:"Your headline goes here", dek:"A one-sentence dek sits under it.",
+    meta:d.strip ? [{label:"Date", value:"Thu, Oct 8"}, {label:"Time", value:"6 PM"}, {label:"Room", value:"RSC 142"}] : [], cta:"RSVP: link in bio"};
+  if(!tplRoot) tplRoot = ReactDOM.createRoot(box);
+  tplRoot.render(h(A.TemplatePost, sample));
+}
+async function tplBg(k, file){
+  try{ tplDraft.bg[k] = await loadOriginal(file); renderTplEditor(); }
+  catch(e){ toast(e.message); }
+}
+async function saveTpl(){
+  const d = tplDraft;
+  if(!String(d.name || "").trim()){ toast("Give the template a name."); return; }
+  if(!mainBg(d)){ toast("Upload at least one background."); return; }
+  d.bgMain = mainBg(d);
+  const btn = $("tpl-save"); btn.disabled = true; btn.textContent = "Saving…";
+  try{
+    await Templates.put(d);
+    const i = templates.findIndex(x => x.id === d.id);
+    const copy = JSON.parse(JSON.stringify(d));
+    if(i >= 0) templates[i] = copy; else templates.push(copy);
+    $("tpl-dlg").close(); tplDraft = null;
+    toast("Template saved. Find it under New post, in " + (CAT_NAME[d.category] || "Other") + ".");
+  }catch(e){ toast(e.message || "Couldn't save the template."); }
+  finally{ btn.disabled = false; btn.textContent = "Save template"; }
+}
+async function deleteTpl(b){
+  if(!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Tap again to delete"; setTimeout(() => { if(b.isConnected){ b.textContent = "Delete template"; delete b.dataset.armed; } }, 4000); return; }
+  try{
+    await Templates.del(tplDraft.id);
+    templates = templates.filter(x => x.id !== tplDraft.id);
+    $("tpl-dlg").close(); tplDraft = null;
+    toast("Template deleted. Posts already made from it are unchanged.");
+  }catch(e){ toast(e.message); }
+  finally{ b.textContent = "Delete template"; delete b.dataset.armed; }
+}
+
+/* ================= export ================= */
+let fontCSS = null;
+function loadScript(src){
+  return new Promise((ok, bad) => {
+    if(document.querySelector('script[src="' + src + '"]')) return ok();
+    const s = document.createElement("script"); s.src = src; s.onload = ok;
+    s.onerror = () => bad(new Error("Couldn't load the image exporter. Check your connection."));
+    document.head.appendChild(s);
+  });
+}
+async function renderPNG(format){
+  await loadScript(H2I);
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  const stage = $("stage"), root = ReactDOM.createRoot(stage);
+  ReactDOM.flushSync(() => root.render(h(A[T[cur.template].comp], props(cur, format, 1))));
+  const node = stage.querySelector(".aic-post");
+  await Promise.all([...node.querySelectorAll("img")].map(im => im.decode ? im.decode().catch(() => {}) : null));
+  if(!fontCSS) fontCSS = await window.htmlToImage.getFontEmbedCSS(node).catch(() => "");
+  // Draw at the layout size, output at the format's exact pixels (screens scale down here).
+  const [w, hgt] = dims(cur, format), [ow, oh] = outSize(cur, format);
+  const opts = {width:w, height:hgt, canvasWidth:ow, canvasHeight:oh, pixelRatio:1, fontEmbedCSS:fontCSS, cacheBust:false};
+  if(/AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent)) await window.htmlToImage.toBlob(node, opts);
+  const blob = await window.htmlToImage.toBlob(node, opts);
+  root.unmount();
+  if(!blob) throw new Error("Couldn't draw the image. Try again.");
+  return blob;
+}
+// The uploaded file itself, byte for byte (finished graphics only).
+async function downloadOriginal(){
+  const im = (cur.fields.images || [])[0];
+  if(!im || !im.src){ toast("Upload your graphic first."); return; }
+  const blob = await (await fetch(im.src)).blob();
+  const ext = ({"image/png":"png","image/jpeg":"jpg","image/webp":"webp","image/gif":"gif"})[blob.type] || "png";
+  download(blob, "aiclub-" + slug(title(cur)) + "-original." + ext);
+}
+// Downloads one PNG per format, named like aiclub-fall-kickoff-wsu-tv-1280x720.png
+async function exportPNG(list){
+  try{
+    for(const f of list){
+      if(f === "original"){ await downloadOriginal(); continue; }
+      const blob = await renderPNG(f);
+      download(blob, "aiclub-" + slug(cur.fields.headline || cur.fields.series || title(cur)) + "-" + FORMATS[f].file + ".png");
+      await new Promise(r => setTimeout(r, 300));
+    }
+    toast(list.length > 1 ? list.length + " images downloaded." : "Image downloaded.");
+  }catch(e){ toast(e.message || "Export failed. Try again."); }
+}
+
+/* ================= events ================= */
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-act],[data-open],[data-filter],[data-cat-filter],[data-seg],[data-fmt],[data-tfmt],[data-tseg],[data-copy],[data-preset],[data-tpl],[data-tpl-edit]");
+  if(!b) return;
+  if(b.dataset.open){ open(b.dataset.open); return; }
+  if(b.dataset.filter){ filter = b.dataset.filter; renderLib(); return; }
+  if(b.dataset.catFilter){ cat = b.dataset.catFilter; renderLib(); return; }
+  if(b.dataset.preset){ create(blank(PRESETS.find(p => p.k === b.dataset.preset))); return; }
+  if(b.dataset.tplEdit){ openTplEditor(b.dataset.tplEdit); return; }
+  if(b.dataset.tpl){ const t = templates.find(x => x.id === b.dataset.tpl); if(t) create(fromTemplate(t)); return; }
+  if(b.dataset.tfmt){ tplFmt = b.dataset.tfmt; renderTplEditor(); return; }
+  if(b.dataset.tseg){ tplDraft[b.dataset.tseg] = b.dataset.v; renderTplEditor(); return; }
+  // custom-template posts show the background for the current format, so redraw the form too
+  if(b.dataset.fmt){ fmt = b.dataset.fmt; renderFmt(); if(cur.template === "custom" || cur.template === "upload") renderForm(); renderPreview(); return; }
+  if(b.dataset.copy){ copy(get(cur, b.dataset.copy) || "", b); return; }
+  if(b.dataset.seg){
+    const k = b.dataset.seg, v = b.dataset.v;
+    if(k.startsWith("tone.")){ const lg = cur.fields.partners[+k.split(".")[1]]; if(lg) lg.tone = v; changed(true); return; }
+    cur.fields[k] = v;
+    if(k === "layout"){
+      const im = cur.fields.images;
+      if(v === "grid" && im.length < 2) while(im.length < 2) im.push(null);
+      if(v === "full" || v === "photo"){ const first = im.find(Boolean) || null; cur.fields.images = [first].concat(im.filter((x, i) => x && x !== first)); }
+    }
+    changed(true); return;
+  }
+  const act = b.dataset.act, f = cur && cur.fields;
+  switch(act){
+    case "move-local": moveLocal(); break;
+    case "home": show("lib"); break;
+    case "new": renderPresets(); $("new-dlg").showModal(); loadTemplates().then(renderPresets); break;
+    case "new-tpl": openTplEditor(null); break;
+    case "tpl-cancel": $("tpl-dlg").close(); break;
+    case "tpl-save": saveTpl(); break;
+    case "tpl-del": deleteTpl(b); break;
+    case "tpl-bg-rm": delete tplDraft.bg[b.dataset.k]; renderTplEditor(); break;
+    case "dl-original": downloadOriginal(); break;
+    case "close-new": $("new-dlg").close(); break;
+    case "theme": setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"); break;
+    case "export-all": {
+      const blob = new Blob([JSON.stringify({app:"aiclub-content-desk", v:1, exported:new Date().toISOString(), posts}, null, 0)], {type:"application/json"});
+      download(blob, "aiclub-posts-" + new Date().toISOString().slice(0, 10) + ".json"); toast("Exported " + posts.length + " posts. Share the file with other officers to import."); break;
+    }
+    case "spk-add": if(f.speakers.length < 4){ f.speakers.push({name:"", role:"", photo:null}); if(f.speakers.length > 1) f.bleed = false; changed(true); } break;
+    case "spk-rm": f.speakers.splice(+b.dataset.i, 1); changed(true); break;
+    case "img-add": if(f.images.length < 4){ f.images.push(null); changed(true); } break;
+    case "img-slot-rm": f.images.splice(+b.dataset.i, 1); changed(true); break;
+    case "img-rm": setImg(b.dataset.key, null); changed(true); break;
+    case "partner-add": (f.partners = f.partners || []).push(null); if(!f.partnerPlace || f.partnerPlace === "none") f.partnerPlace = "footer"; changed(true); break;
+    case "partner-rm": f.partners.splice(+b.dataset.i, 1); changed(true); break;
+    case "crop": openCrop(b.dataset.key); break;
+    case "crop-done": closeCrop(); break;
+    case "crop-reset": if(crop){ Object.assign(crop.im, {x:50, y:50, zoom:1}); cropFromImage(); drawCrop(); renderPreview(); } break;
+    case "stat-add": f.stats.push({value:"", label:""}); changed(true); break;
+    case "stat-rm": f.stats.splice(+b.dataset.i, 1); changed(true); break;
+    case "meta-add": (f.meta = f.meta || []).push({label:"", value:""}); changed(true); break;
+    case "meta-rm": f.meta.splice(+b.dataset.i, 1); changed(true); break;
+    case "dl": exportPNG([fmt]); break;
+    case "dl-all": exportPNG(formats(cur)); break;
+    case "approve": {
+      const r = cur.review, miss = [];
+      if(!r.facts) miss.push("check the facts"); if(!r.tagged) miss.push("confirm tags");
+      if(cur.template === "speaker" && !r.consent) miss.push("get speaker approval");
+      if(!String(r.by || "").trim()) miss.push("add who approved it");
+      if(miss.length){ toast("Before approving: " + miss.join(", ") + "."); break; }
+      cur.status = "approved"; changed(true);
+      toast(cur._flags ? "Approved with " + cur._flags + (cur._flags === 1 ? " open check" : " open checks") + ", your call." : "Approved."); break;
+    }
+    case "posted": cur.status = "posted"; cur.postedAt = Date.now(); changed(true); toast("Marked as posted."); break;
+    case "to-draft": cur.status = "draft"; changed(true); break;
+    case "dup": {
+      const c = JSON.parse(JSON.stringify(cur)); delete c._flags; delete c._v; delete c.createdBy; delete c.updatedBy;
+      Object.assign(c, {id:uid(), status:"draft", created:Date.now(), updated:Date.now(), review:{facts:false, tagged:false, consent:false, by:""}});
+      posts.push(c); await persist(c); open(c.id); toast("Duplicated. Use it for the next carousel slide or story."); break;
+    }
+    case "del": {
+      if(!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Tap again to delete"; setTimeout(() => { if(b.isConnected){ b.textContent = "Delete"; delete b.dataset.armed; } }, 4000); break; }
+      clearTimeout(saveTimer);
+      posts = posts.filter(p => p.id !== cur.id);
+      if(!memOnly){ try{ await DB.del(cur.id); }catch(err){} }
+      toast("Deleted."); show("lib"); break;
+    }
+  }
+});
+document.addEventListener("input", e => {
+  const t = e.target;
+  if(t.dataset.t && tplDraft){ // template editor fields
+    tplDraft[t.dataset.t] = t.type === "checkbox" ? t.checked : t.value;
+    renderTplPreview(); return;
+  }
+  if(t.dataset.f && cur){
+    const v = t.type === "checkbox" ? t.checked : t.value;
+    set(cur, t.dataset.f, v);
+    changed(t.type === "checkbox" && /bleed|bw/.test(t.dataset.f));
+    if(t.dataset.f === "fields.headline") $("ed-title").textContent = title(cur);
+    return;
+  }
+  if(t.dataset.zoom && cur){
+    const im = imgAt(t.dataset.zoom); if(im){ im.zoom = +t.value; changed(false); }
+  }
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if(t.dataset.upload && t.files && t.files[0]){ putImage(t.dataset.upload, t.files[0]); t.value = ""; }
+  if(t.id === "import-file" && t.files && t.files[0]){ importFile(t.files[0]); t.value = ""; }
+  if(t.hasAttribute("data-new-upload") && t.files && t.files[0]){ createUpload(t.files[0]); t.value = ""; }
+  if(t.dataset.tplUpload && t.files && t.files[0]){ tplBg(t.dataset.tplUpload, t.files[0]); t.value = ""; }
+  if(t.hasAttribute("data-cat") && cur){ cur.category = t.value; changed(false); }
+  if(t.dataset.t && tplDraft && t.tagName === "SELECT"){ tplDraft[t.dataset.t] = t.value; renderTplPreview(); }
+});
+$("new-dlg").addEventListener("click", e => { if(e.target === $("new-dlg")) $("new-dlg").close(); });
+
+/* drag to reposition, wheel to zoom, drop to add */
+let drag = null;
+$("pv").addEventListener("pointerdown", e => {
+  const el = e.target.closest("[data-slot]"); if(!el || !cur) return;
+  const im = imgAt(el.dataset.slot);
+  if(!im){ const inp = document.querySelector('[data-upload="' + el.dataset.slot + '"]'); if(inp) inp.click(); return; }
+  e.preventDefault();
+  const r = el.getBoundingClientRect(), s = {w:el.offsetWidth, h:el.offsetHeight};
+  const cover = Math.max(s.w / (im.w || s.w), s.h / (im.h || s.h));
+  const z = im.zoom || 1, cw = (im.w || s.w) * cover * z, ch = (im.h || s.h) * cover * z;
+  drag = {key:el.dataset.slot, x0:e.clientX, y0:e.clientY, ix:im.x, iy:im.y, k:r.width / s.w, ox:cw - s.w, oy:ch - s.h};
+  $("pv").classList.add("dragging");
+});
+window.addEventListener("pointermove", e => {
+  if(!drag) return;
+  const im = imgAt(drag.key); if(!im) return;
+  const dx = (e.clientX - drag.x0) / drag.k, dy = (e.clientY - drag.y0) / drag.k;
+  if(drag.ox > 1) im.x = Math.max(0, Math.min(100, drag.ix - dx / drag.ox * 100));
+  if(drag.oy > 1) im.y = Math.max(0, Math.min(100, drag.iy - dy / drag.oy * 100));
+  renderPreview();
+});
+window.addEventListener("pointerup", () => { if(drag){ drag = null; $("pv").classList.remove("dragging"); changed(false); } });
+$("pv").addEventListener("wheel", e => {
+  const el = e.target.closest("[data-slot]"); if(!el || !cur) return;
+  const im = imgAt(el.dataset.slot); if(!im) return;
+  e.preventDefault();
+  im.zoom = Math.max(1, Math.min(3, (im.zoom || 1) * (e.deltaY < 0 ? 1.05 : 1 / 1.05)));
+  const zr = document.querySelector('[data-zoom="' + el.dataset.slot + '"]'); if(zr) zr.value = im.zoom;
+  changed(false);
+}, {passive:false});
+$("pv").addEventListener("dragover", e => { if(e.target.closest("[data-slot]")){ e.preventDefault(); $("pv").classList.add("drop"); } });
+$("pv").addEventListener("dragleave", () => $("pv").classList.remove("drop"));
+$("pv").addEventListener("drop", e => {
+  $("pv").classList.remove("drop");
+  const el = e.target.closest("[data-slot]"); if(!el || !e.dataTransfer.files[0]) return;
+  e.preventDefault(); putImage(el.dataset.slot, e.dataTransfer.files[0]);
+});
+window.addEventListener("resize", () => { if(cur) renderPreview(); });
+
+/* ================= crop tool ================= */
+// The frame renders object-fit: cover + object-position x% y% + scale(zoom) around that point.
+// The crop box is the visible rectangle in image pixels; these two functions convert between them.
+let crop = null;
+function cropGeom(){
+  const im = crop.im, W = crop.W, H = crop.H, iw = im.w, ih = im.h;
+  const s = Math.max(W / iw, H / ih);
+  return {W, H, iw, ih, s, RW:iw * s, RH:ih * s};
+}
+function cropFromImage(){
+  const g = cropGeom(), im = crop.im, z = Math.max(1, im.zoom || 1), x = im.x == null ? 50 : im.x, y = im.y == null ? 50 : im.y;
+  crop.w = g.W / (z * g.s); crop.h = g.H / (z * g.s);
+  crop.l = (g.W * x / 100 * (1 - 1 / z) + (g.RW - g.W) * x / 100) / g.s;
+  crop.t = (g.H * y / 100 * (1 - 1 / z) + (g.RH - g.H) * y / 100) / g.s;
+}
+function imageFromCrop(){
+  const g = cropGeom(), im = crop.im;
+  const z = Math.max(1, Math.min(3, g.W / (crop.w * g.s)));
+  const dx = g.RW - g.W / z, dy = g.RH - g.H / z;
+  im.zoom = z;
+  im.x = dx > 0.5 ? Math.max(0, Math.min(100, 100 * crop.l * g.s / dx)) : 50;
+  im.y = dy > 0.5 ? Math.max(0, Math.min(100, 100 * crop.t * g.s / dy)) : 50;
+}
+function drawCrop(){
+  const d = crop.d;
+  ["crop-box", "crop-frame"].forEach(id => { const box = $(id);
+    box.style.left = crop.l * d + "px"; box.style.top = crop.t * d + "px";
+    box.style.width = crop.w * d + "px"; box.style.height = crop.h * d + "px"; });
+}
+function openCrop(key){
+  const im = imgAt(key), slot = slotSizes[key];
+  if(!im || !im.w){ toast("Add a photo first."); return; }
+  if(!slot){ toast("The frame isn't on this format. Switch formats and try again."); return; }
+  crop = {key, im, W:slot.w, H:slot.h};
+  const maxW = Math.min(820, window.innerWidth - 90), maxH = Math.max(260, window.innerHeight - 300);
+  crop.d = Math.min(maxW / im.w, maxH / im.h);
+  const area = $("crop-area");
+  area.style.width = Math.round(im.w * crop.d) + "px"; area.style.height = Math.round(im.h * crop.d) + "px";
+  $("crop-img").src = im.src;
+  $("crop-sub").textContent = "Drag the box to move it; drag a corner to crop tighter or looser. The box keeps the frame's shape, " + slot.w + " × " + slot.h + " px in " + FMT_LABEL[fmt].toLowerCase() + ".";
+  cropFromImage(); drawCrop();
+  $("crop-dlg").showModal();
+}
+function closeCrop(){ if($("crop-dlg").open) $("crop-dlg").close(); if(crop){ crop = null; changed(true); } }
+let cdrag = null;
+$("crop-area").addEventListener("pointerdown", e => {
+  if(!crop) return;
+  const hnd = e.target.closest(".d-crop-h"), inBox = e.target.closest("#crop-box");
+  if(!hnd && !inBox) return;
+  e.preventDefault(); e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId);
+  const r = $("crop-area").getBoundingClientRect();
+  cdrag = {c:hnd ? hnd.dataset.c : null, x0:e.clientX, y0:e.clientY, l:crop.l, t:crop.t, w:crop.w, h:crop.h, rx:r.left, ry:r.top};
+});
+window.addEventListener("pointermove", e => {
+  if(!cdrag || !crop) return;
+  const g = cropGeom(), a = g.W / g.H, d = crop.d;
+  if(!cdrag.c){
+    crop.l = Math.max(0, Math.min(g.iw - crop.w, cdrag.l + (e.clientX - cdrag.x0) / d));
+    crop.t = Math.max(0, Math.min(g.ih - crop.h, cdrag.t + (e.clientY - cdrag.y0) / d));
+  }else{
+    const c = cdrag.c, right = c[1] === "r", bottom = c[0] === "b";
+    const ax = right ? cdrag.l : cdrag.l + cdrag.w, ay = bottom ? cdrag.t : cdrag.t + cdrag.h;
+    const px = (e.clientX - cdrag.rx) / d, py = (e.clientY - cdrag.ry) / d;
+    let w = Math.max(Math.abs(px - ax), Math.abs(py - ay) * a);
+    const maxW = Math.min(g.W / g.s, right ? g.iw - ax : ax, (bottom ? g.ih - ay : ay) * a), minW = g.W / (3 * g.s);
+    w = Math.max(Math.min(minW, maxW), Math.min(w, maxW));
+    crop.w = w; crop.h = w / a;
+    crop.l = right ? ax : ax - w; crop.t = bottom ? ay : ay - crop.h;
+  }
+  drawCrop(); imageFromCrop(); renderPreview();
+});
+window.addEventListener("pointerup", () => { cdrag = null; });
+$("crop-dlg").addEventListener("close", () => { if(crop){ crop = null; changed(true); } });
+$("pv").addEventListener("dblclick", e => { const el = e.target.closest("[data-slot]"); if(el && imgAt(el.dataset.slot)) openCrop(el.dataset.slot); });
+
+async function importFile(file){
+  try{
+    const data = JSON.parse(await file.text());
+    const list = Array.isArray(data) ? data : data.posts;
+    if(!Array.isArray(list)) throw new Error("That file isn't a content desk export.");
+    let n = 0;
+    for(const p of list){
+      if(!p || !p.id || !T[p.template] || !p.fields) continue;
+      const i = posts.findIndex(x => x.id === p.id);
+      if(i >= 0){ if((p.updated || 0) <= (posts[i].updated || 0)) continue; p._v = posts[i]._v; posts[i] = p; } else { delete p._v; posts.push(p); }
+      await persist(p); n++;
+    }
+    toast(n ? "Imported " + n + (n === 1 ? " post." : " posts.") : "Nothing new in that file.");
+    if(!cur) renderLib();
+  }catch(e){ toast(e.message || "Couldn't read that file."); }
+}
+
+/* ================= theme and boot ================= */
+function setTheme(t){
+  document.documentElement.dataset.theme = t;
+  try{ localStorage.setItem("aiclub-desk-theme", t); }catch(e){}
+  $("theme-btn").textContent = t === "dark" ? "Light" : "Dark";
+  $("brand-logo").src = t === "dark" ? window.AIClubLogos.white : window.AIClubLogos.black;
+}
+(async function boot(){
+  let t = null; try{ t = localStorage.getItem("aiclub-desk-theme"); }catch(e){}
+  setTheme(t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+  if(/^https?:$/.test(location.protocol)){
+    try{ await Remote.probe(); remote = true; }catch(e){ banner("Couldn't reach the shared desk, so you're working only in this browser. Reload to try again."); }
+  }
+  try{ posts = (await DB.all()) || []; }
+  catch(e){
+    if(remote){ banner("Couldn't load the shared posts. Reload to try again."); posts = []; }
+    else { memOnly = true; banner("This browser won't let the desk save. Posts last until you close the tab, so use Export posts to keep them."); }
+  }
+  if(remote){
+    try{ document.querySelector(".d-brand span").title = "Signed in as " + me; }catch(e){}
+    try{
+      const n = ((await Local.all()) || []).length;
+      if(n){ const b = $("banner"); b.innerHTML = "Found " + n + (n === 1 ? " draft" : " drafts") + " saved only in this browser. <button class=\"aic-btn aic-btn-secondary\" type=\"button\" data-act=\"move-local\">Move to the shared desk</button>"; b.hidden = false; }
+    }catch(e){}
+    syncT = setInterval(sync, 15000);
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) sync(); });
+  }
+  if(!memOnly) await loadTemplates();
+  renderPresets();
+  show("lib");
+})();
+})();
+</script>
+</body>
+</html>
