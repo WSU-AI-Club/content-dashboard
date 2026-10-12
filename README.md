@@ -78,3 +78,5 @@ from the verified login.
 - Deleting a post or template hides it for everyone; the row stays in D1.
 - Posts copy their custom template when created, so editing or deleting a template never changes
   posts already made from it.
+
+_Deploys automatically from `main` via Cloudflare Workers Builds._
