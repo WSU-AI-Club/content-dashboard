@@ -546,7 +546,8 @@ dialog.d-dlg::backdrop{background:rgba(11,11,12,.55)}
         <div class="d-pv-bar">
           <div class="d-fmts" id="fmt-seg" role="group" aria-label="Format"></div>
           <div class="d-actions">
-            <button class="aic-btn aic-btn-primary" type="button" data-act="dl">Download PNG</button>
+            <div class="d-seg" role="group" aria-label="File type"><button type="button" data-dltype="png" aria-pressed="true" title="Sharpest: best for Instagram, LinkedIn and screens">PNG</button><button type="button" data-dltype="jpeg" aria-pressed="false" title="Smaller file: for email, Shockerblast and anywhere that asks for a JPEG">JPEG</button></div>
+            <button class="aic-btn aic-btn-primary" type="button" data-act="dl" id="dl-btn">Download PNG</button>
             <button class="aic-btn aic-btn-secondary" type="button" data-act="dl-all">All formats</button>
           </div>
         </div>
@@ -1972,7 +1973,7 @@ function changed(structural){
 function open(id){
   cur = posts.find(p => p.id === id); if(!cur) return;
   fmt = "feed";
-  show("ed"); renderFmt(); renderForm(); renderPreview();
+  show("ed"); renderFmt(); renderDlType(); renderForm(); renderPreview();
 }
 // Add a new post (from blank(), blankUpload() or fromTemplate()) and open it.
 async function create(p){
@@ -2107,7 +2108,14 @@ function loadScript(src){
     document.head.appendChild(s);
   });
 }
-async function renderPNG(format){
+// Download file type, remembered per browser: "png" (default) or "jpeg".
+let dlType = "png";
+try{ if(localStorage.getItem("aiclub-dltype") === "jpeg") dlType = "jpeg"; }catch(e){}
+function renderDlType(){
+  document.querySelectorAll("[data-dltype]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.dltype === dlType)));
+  const b = $("dl-btn"); if(b) b.textContent = "Download " + (dlType === "jpeg" ? "JPEG" : "PNG");
+}
+async function renderPNG(format, type){
   await loadScript(H2I);
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
   const stage = $("stage"), root = ReactDOM.createRoot(stage);
@@ -2118,8 +2126,21 @@ async function renderPNG(format){
   // Draw at the layout size, output at the format's exact pixels (screens scale down here).
   const [w, hgt] = dims(cur, format), [ow, oh] = outSize(cur, format);
   const opts = {width:w, height:hgt, canvasWidth:ow, canvasHeight:oh, pixelRatio:1, fontEmbedCSS:fontCSS, cacheBust:false};
-  if(/AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent)) await window.htmlToImage.toBlob(node, opts);
-  const blob = await window.htmlToImage.toBlob(node, opts);
+  const safari = /AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent);
+  let blob;
+  if(type === "jpeg"){
+    // JPEG has no transparency: paint the post's ground first, then the graphic, at 92% quality.
+    if(safari) await window.htmlToImage.toCanvas(node, opts);
+    const src = await window.htmlToImage.toCanvas(node, opts), c = document.createElement("canvas");
+    c.width = ow; c.height = oh;
+    const g = c.getContext("2d");
+    g.fillStyle = cur.fields.ground === "paper" ? "#F5F2EA" : "#0B0B0C"; g.fillRect(0, 0, ow, oh);
+    g.drawImage(src, 0, 0, ow, oh);
+    blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.92));
+  }else{
+    if(safari) await window.htmlToImage.toBlob(node, opts);
+    blob = await window.htmlToImage.toBlob(node, opts);
+  }
   root.unmount();
   if(!blob) throw new Error("Couldn't draw the image. Try again.");
   return blob;
@@ -2132,13 +2153,13 @@ async function downloadOriginal(){
   const ext = ({"image/png":"png","image/jpeg":"jpg","image/webp":"webp","image/gif":"gif"})[blob.type] || "png";
   download(blob, "aiclub-" + slug(title(cur)) + "-original." + ext);
 }
-// Downloads one PNG per format, named like aiclub-fall-kickoff-wsu-tv-1280x720.png
+// Downloads one image per format in the chosen file type, named like aiclub-fall-kickoff-wsu-tv-1280x720.png (or .jpg)
 async function exportPNG(list){
   try{
     for(const f of list){
       if(f === "original"){ await downloadOriginal(); continue; }
-      const blob = await renderPNG(f);
-      download(blob, "aiclub-" + slug(cur.fields.headline || cur.fields.series || title(cur)) + "-" + FORMATS[f].file + ".png");
+      const blob = await renderPNG(f, dlType);
+      download(blob, "aiclub-" + slug(cur.fields.headline || cur.fields.series || title(cur)) + "-" + FORMATS[f].file + (dlType === "jpeg" ? ".jpg" : ".png"));
       await new Promise(r => setTimeout(r, 300));
     }
     toast(list.length > 1 ? list.length + " images downloaded." : "Image downloaded.");
@@ -2147,7 +2168,7 @@ async function exportPNG(list){
 
 /* ================= events ================= */
 document.addEventListener("click", async e => {
-  const b = e.target.closest("[data-act],[data-open],[data-filter],[data-cat-filter],[data-seg],[data-fmt],[data-tfmt],[data-tseg],[data-copy],[data-preset],[data-tpl],[data-tpl-edit]");
+  const b = e.target.closest("[data-act],[data-dltype],[data-open],[data-filter],[data-cat-filter],[data-seg],[data-fmt],[data-tfmt],[data-tseg],[data-copy],[data-preset],[data-tpl],[data-tpl-edit]");
   if(!b) return;
   if(b.dataset.open){ open(b.dataset.open); return; }
   if(b.dataset.filter){ filter = b.dataset.filter; renderLib(); return; }
@@ -2159,6 +2180,7 @@ document.addEventListener("click", async e => {
   if(b.dataset.tseg){ tplDraft[b.dataset.tseg] = b.dataset.v; renderTplEditor(); return; }
   // custom-template posts show the background for the current format, so redraw the form too
   if(b.dataset.fmt){ fmt = b.dataset.fmt; renderFmt(); if(cur.template === "custom" || cur.template === "upload") renderForm(); renderPreview(); return; }
+  if(b.dataset.dltype){ dlType = b.dataset.dltype; try{ localStorage.setItem("aiclub-dltype", dlType); }catch(err){} renderDlType(); return; }
   if(b.dataset.copy){ copy(get(cur, b.dataset.copy) || "", b); return; }
   if(b.dataset.seg){
     const k = b.dataset.seg, v = b.dataset.v;

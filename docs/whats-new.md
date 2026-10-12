@@ -81,6 +81,14 @@ slightly differently ("image/jpg", "image/pjpeg", or no label at all) was refuse
 JPG, WebP or GIF file" or failed to save. The desk and the server now check what the file actually
 is, not what it's labelled.
 
+## 6. JPEG downloads
+
+Next to **Download** there's now a **PNG / JPEG** choice. JPEG gives a smaller file for email,
+Shockerblast and anything that asks for a JPEG; PNG stays the sharpest for Instagram, LinkedIn and
+the screens. **All formats** downloads every size in the type you picked, and the desk remembers
+your choice on that computer. JPEG uploads (photos, logos, backgrounds, finished graphics) work too,
+including .jfif files and phone photos with no file type.
+
 ## Unchanged
 
 Existing posts, photos, the review and approval steps, the brand checks, and live sharing between
