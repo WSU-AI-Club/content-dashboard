@@ -329,6 +329,8 @@ const FORMATS = {
   blast:    {label:"Shockerblast",   group:"Screens", out:[800,600],   file:"shockerblast-800x600",     use:"the Shockerblast newsletter"},
   original: {label:"Original file",  group:"File",    out:null,        file:"original",                 use:"the graphic exactly as uploaded"}
 };
+// QR code size in layout pixels per format (the --qr values in bundle.css), for the density check.
+const QR_PX = {feed:216, story:216, wide:168, tv:216, bigtv:216, blast:252};
 const FMT_LABEL = Object.fromEntries(Object.entries(FORMATS).map(([k, v]) => [k, v.label]));
 const SCREENS = ["tv", "bigtv", "blast"];
 
@@ -890,6 +892,7 @@ function renderForm(){
   }
 
   if(t !== "upload") html += partnerPanel();
+  html += qrPanel();
 
   // data strip
   if(t !== "recap" && t !== "blank" && t !== "upload" && !(t === "custom" && f.textPos === "none")){
@@ -939,6 +942,17 @@ function partnerPanel(){
       (lg ? field("Organization name (alt text)", "fields.partners." + i + ".name", {max:60}) : '') + '</div>').join("") +
     (list.length < 3 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="partner-add">Add partner logo</button>' : '') +
     '<p class="d-hint" style="margin-top:10px">Use a PNG with a transparent background, or an SVG. Full color on ivory; switch it to White on black.</p></section>';
+}
+// QR code: one switch, the link, and the label that sits in the footer. The code itself always goes
+// in the same place, the bottom-right corner (see "QR code" in bundle.css).
+function qrPanel(){
+  const f = cur.fields, on = !!f.qrOn;
+  return '<section class="d-panel"><h2>QR code <small>optional</small></h2>' +
+    '<label class="d-check"><input type="checkbox" data-f="fields.qrOn"' + (on ? " checked" : "") + '>Add a QR code</label>' +
+    (on ? '<div style="margin-top:12px"></div>' + field("Link it opens", "fields.qr", {ph:"https://", max:330}) +
+      (cur.template === "upload" ? "" : field("Label beside it", "fields.qrLabel", {ph:"Scan to RSVP", max:24})) +
+      '<p class="d-hint">It goes in the bottom-right corner of every size, Instagram to Woolsey Big TV, and the data strip folds beside it. Short links scan best. Scan it with your phone before you post.</p>' : '') +
+    '</section>';
 }
 function capField(label, path, rows, hint){
   return '<div class="d-f"><span>' + label + '<em class="d-count" data-count="' + path + '"></em></span>' +
@@ -1063,6 +1077,31 @@ function collect(){
     const over = main && [...main.children].some(el => { const r = el.getBoundingClientRect(); return r.bottom > box.bottom + 2 || r.top < box.top - 2; });
     if(over) add("error", "Text doesn't fit the " + FMT_LABEL[fmt] + " format. Shorten the headline or dek, or drop a data-strip cell.", "fields.headline");
     post.querySelectorAll(".aic-strip dd").forEach(dd => { if(dd.scrollWidth > dd.clientWidth + 1) add("warn", "A data-strip value is cut off. Shorten it (“Thu, Oct 8”).", "fields.meta.0.value"); });
+  }
+  // QR code: a link, one that fits, dense enough to scan at this size, nothing underneath it
+  if(f.qrOn){
+    const link = String(f.qr || "").trim();
+    if(!link) add("error", "Add the link for the QR code, or turn the QR code off.", "fields.qr");
+    else{
+      const m = A.qrMatrix(link);
+      if(!m) add("error", "That link is too long for a QR code. Use a short link.", "fields.qr");
+      else{
+        if(!/^https?:\/\//i.test(link)) add("warn", "Start the link with https:// so phones open it as a web page.", "fields.qr");
+        // Exported pixels per QR module in each size this post downloads in. Under about 3.8, phone cameras
+        // start to struggle (3.8 leaves room for blur and compression), so name those sizes. QR_PX mirrors --qr in bundle.css.
+        const dense = formats(cur).filter(k => QR_PX[k] && QR_PX[k] * outSize(cur, k)[0] / dims(cur, k)[0] / (m.length + 6) < 3.8);
+        if(dense.length) add("warn", "With this long a link the QR code is dense at " + dense.map(k => FMT_LABEL[k]).join(", ") + " size. A short link scans more easily.", "fields.qr");
+        const el = post && post.querySelector(".aic-qr");
+        if(el){
+          const a = el.getBoundingClientRect();
+          const under = [...post.querySelectorAll("p,h1,dt,dd,footer span,.aic-photo:not(.aic-bg),.aic-stat,.aic-plogo,.aic-partners > span")].some(x => {
+            const b = x.getBoundingClientRect();
+            return b.width && Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+          });
+          if(under) add("error", "Something sits under the QR code in " + FMT_LABEL[fmt] + ". Shorten the headline or dek, or drop a data-strip cell.", "fields.qr");
+        }
+      }
+    }
   }
   // captions
   if(c.linkedin){
@@ -1370,7 +1409,8 @@ document.addEventListener("input", e => {
   if(t.dataset.f && cur){
     const v = t.type === "checkbox" ? t.checked : t.value;
     set(cur, t.dataset.f, v);
-    changed(t.type === "checkbox" && /bleed|bw/.test(t.dataset.f));
+    if(t.dataset.f === "fields.qrOn" && v && cur.fields.qrLabel == null) cur.fields.qrLabel = "Scan to RSVP";
+    changed(t.type === "checkbox" && /bleed|bw|qrOn/.test(t.dataset.f));
     if(t.dataset.f === "fields.headline") $("ed-title").textContent = title(cur);
     return;
   }

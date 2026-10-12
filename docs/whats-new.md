@@ -54,6 +54,25 @@ that every officer sees.
 - Posts copy the template when they're made, so editing or deleting a template later never changes
   posts that already exist.
 
+## 5. QR codes
+
+Every graphic now has a dedicated place for a QR code: the **bottom-right corner**, on every
+template and every size, from the Instagram feed to Woolsey Big TV.
+
+- In the editor, open **QR code**, tick **Add a QR code** and paste the link. The label beside it
+  defaults to **Scan to RSVP**; change it to whatever the code does ("Scan to sign up").
+- The code is drawn by the desk itself, so it shows in the preview immediately and is in every
+  download. Nothing is sent to an outside QR service.
+- It's sized to scan: 216 px on Instagram and LinkedIn posts (a fifth of the width), 144 px on WSU
+  TV, 216 px on Woolsey Big TV and 140 px on Shockerblast. It's black on an ivory square, so it works
+  on ivory, black and photo backgrounds.
+- The data strip folds into two columns beside it, so no date, time or room gets cut off, and
+  photos get a little shorter where needed. Posts without a QR code look exactly as before.
+- The checks warn you if the link is missing, too long, doesn't start with https://, or is long
+  enough that the code gets dense at some sizes (use a short link then), and if anything ends up
+  under the code.
+- Scan it with your phone before you post.
+
 ## Unchanged
 
 Existing posts, photos, the review and approval steps, the brand checks, and live sharing between

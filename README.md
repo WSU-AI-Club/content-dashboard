@@ -58,6 +58,14 @@ To add a format: add its layout size to `SIZE` (and `LAND` if it's landscape) in
 download size and label to `FORMATS` in `desk.html`, list it in the templates' `formats` in `T`,
 and add layout rules in `bundle.css` if the existing ones don't fit.
 
+## QR codes
+
+Any post can carry one QR code (`qrOn`, `qr` = the link, `qrLabel` = the footer label). It is always
+drawn in the bottom-right corner by a small encoder inside `bundle.js` (`qrMatrix`, byte mode, error
+correction M, links up to about 330 characters), so previews and exports never call a QR service.
+Its size per format is `--qr` in `bundle.css` (mirrored as `QR_PX` in `desk.html` for the density
+check); the strip, footer and partner row move out of its way under `.aic-has-qr`.
+
 ## Login
 
 Open mode (no login) is on: `OPEN_MODE = "true"` in `wrangler.toml`. Anyone with the link can use
