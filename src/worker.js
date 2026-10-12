@@ -156,9 +156,14 @@ async function remove(env, name, id, email) {
 
 // ---- images ----------------------------------------------------------------------------------
 async function putImage(env, req, email) {
-  const type = (req.headers.get("content-type") || "").split(";")[0];
-  if (!/^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(type)) return json({ error: "Not an image" }, 415);
   const buf = new Uint8Array(await req.arrayBuffer());
+  // Trust the bytes over the label: JPEGs often arrive as image/jpg, image/pjpeg or with no type.
+  const at = (i, ...v) => v.every((x, k) => buf[i + k] === x);
+  const sniffed = at(0, 0xff, 0xd8, 0xff) ? "image/jpeg" : at(0, 0x89, 0x50, 0x4e, 0x47) ? "image/png" :
+    at(0, 0x47, 0x49, 0x46, 0x38) ? "image/gif" : at(0, 0x52, 0x49, 0x46, 0x46) && at(8, 0x57, 0x45, 0x42, 0x50) ? "image/webp" : "";
+  const label = (req.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  const type = sniffed || (label === "image/svg+xml" ? label : "");
+  if (!type) return json({ error: "Not an image" }, 415);
   if (buf.byteLength > MAX_IMAGE) return json({ error: "Image too large (10 MB max)" }, 413);
   const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM images").first();
   if (n.n >= MAX_IMAGES) return json({ error: "Image limit reached" }, 429);

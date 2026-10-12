@@ -73,6 +73,14 @@ template and every size, from the Instagram feed to Woolsey Big TV.
   under the code.
 - Scan it with your phone before you post.
 
+## 6. JPEG uploads
+
+JPEG files (.jpg, .jpeg, .jfif) now upload everywhere: photos, speaker portraits, partner logos,
+finished graphics and template backgrounds. Before, a JPEG that a phone, browser or app labelled
+slightly differently ("image/jpg", "image/pjpeg", or no label at all) was refused with "Use a PNG,
+JPG, WebP or GIF file" or failed to save. The desk and the server now check what the file actually
+is, not what it's labelled.
+
 ## Unchanged
 
 Existing posts, photos, the review and approval steps, the brand checks, and live sharing between

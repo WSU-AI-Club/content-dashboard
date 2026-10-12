@@ -500,7 +500,7 @@ dialog.d-dlg::backdrop{background:rgba(11,11,12,.55)}
     <div class="d-bar-r">
       <button class="aic-btn aic-btn-primary" type="button" data-act="new">New post</button>
       <!-- Finished graphics (Canva, Figma...) go straight in as their own post. -->
-      <label class="aic-btn aic-btn-secondary d-file">Upload a graphic<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
+      <label class="aic-btn aic-btn-secondary d-file">Upload a graphic<input type="file" accept="image/png,image/jpeg,image/pjpeg,.jpg,.jpeg,.jfif,.pjpeg,.pjp,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
       <!-- Import/Export move posts between desks as a .json backup file; they don't take images. -->
       <label class="aic-btn aic-btn-quiet d-file" title="Load a .json backup made with Export backup">Import backup<input type="file" accept="application/json,.json" id="import-file" aria-label="Import posts from a backup file"></label>
       <button class="aic-btn aic-btn-quiet" type="button" data-act="export-all" title="Save every post to a .json backup file">Export backup</button>
@@ -570,7 +570,7 @@ dialog.d-dlg::backdrop{background:rgba(11,11,12,.55)}
     </div>
     <p class="d-sub">Pick the series. It sets the template, the ground and the data strip for you.</p>
     <div class="d-new-top">
-      <label class="aic-btn aic-btn-secondary d-file">Upload a finished graphic<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
+      <label class="aic-btn aic-btn-secondary d-file">Upload a finished graphic<input type="file" accept="image/png,image/jpeg,image/pjpeg,.jpg,.jpeg,.jfif,.pjpeg,.pjp,image/webp,image/gif" data-new-upload aria-label="Upload a finished graphic"></label>
       <button class="aic-btn aic-btn-secondary" type="button" data-act="new-tpl">Add a template</button>
     </div>
     <!-- one section per category, built by renderPresets() -->
@@ -1285,7 +1285,7 @@ async function upImages(o){
     if(!im.src || im.src.indexOf("data:") !== 0) continue;
     let b = await (await fetch(im.src)).blob();
     if(b.size > MAX_UPLOAD && b.type !== "image/svg+xml") b = await shrink(b);
-    const r = await F("/api/images", {method:"POST", headers:{"content-type":b.type || "image/jpeg"}, body:b});
+    const r = await F("/api/images", {method:"POST", headers:{"content-type":/^image\/(png|webp|gif|svg\+xml)$/.test(b.type) ? b.type : "image/jpeg"}, body:b});
     if(!r.ok) throw new Error("image upload " + r.status);
     im.src = (await r.json()).url;
   }
@@ -1469,9 +1469,24 @@ function dims(p, f){
 function outSize(p, f){ return (FORMATS[f] && FORMATS[f].out) || dims(p, f); }
 
 /* ================= images ================= */
+// What an image file really is, read from its first bytes. Browsers and phones often label JPEGs
+// "image/jpg", "image/pjpeg" or nothing at all (.jfif files, some downloads and drag-and-drops), so
+// the label alone can't be trusted. Returns the file re-labelled with the standard type, or null if
+// it isn't a PNG, JPEG, WebP, GIF or SVG.
+async function asImage(file){
+  if(!file) return null;
+  const b = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const at = (i, ...v) => v.every((x, k) => b[i + k] === x);
+  let type = at(0, 0xff, 0xd8, 0xff) ? "image/jpeg" : at(0, 0x89, 0x50, 0x4e, 0x47) ? "image/png" :
+    at(0, 0x47, 0x49, 0x46, 0x38) ? "image/gif" : at(0, 0x52, 0x49, 0x46, 0x46) && at(8, 0x57, 0x45, 0x42, 0x50) ? "image/webp" : "";
+  if(!type && (/svg/.test(file.type) || /\.svg$/i.test(file.name || ""))) type = "image/svg+xml";
+  if(!type) return null;
+  return type === file.type ? file : new File([file], file.name || "image", {type});
+}
+const NOT_IMAGE = "Use a JPG, PNG, WebP or GIF file.";
 function loadImage(file){
   return new Promise((res, rej) => {
-    if(!file || !/^image\//.test(file.type)) return rej(new Error("That isn't an image file."));
+    if(!file) return rej(new Error(NOT_IMAGE));
     const url = URL.createObjectURL(file), im = new Image();
     im.onload = () => {
       const max = 2400, s = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
@@ -1487,7 +1502,7 @@ function loadImage(file){
 }
 function loadLogo(file){
   return new Promise((res, rej) => {
-    if(!file || !/^image\//.test(file.type)) return rej(new Error("That isn't an image file."));
+    if(!file) return rej(new Error(NOT_IMAGE));
     const r = new FileReader();
     r.onload = () => {
       const im = new Image();
@@ -1512,7 +1527,7 @@ function loadLogo(file){
 // a browser can't store, are re-encoded.
 function loadOriginal(file){
   return new Promise((res, rej) => {
-    if(!file || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return rej(new Error("Use a PNG, JPG, WebP or GIF file."));
+    if(!file || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return rej(new Error(NOT_IMAGE));
     const r = new FileReader();
     r.onload = () => {
       const im = new Image();
@@ -1533,6 +1548,8 @@ function loadOriginal(file){
 }
 async function putImage(key, file){
   try{
+    file = await asImage(file);
+    if(!file) throw new Error(NOT_IMAGE);
     if(key.startsWith("partners.")){ const old = imgAt(key) || {}; const v = await loadLogo(file); if(old.name) v.name = old.name; setImg(key, v); }
     else if(key.startsWith("bg.") || cur.template === "upload") setImg(key, await loadOriginal(file));
     else setImg(key, await loadImage(file));
@@ -1610,7 +1627,7 @@ function slotHTML(key, label){
   const th = im ? '<span class="d-slot-th" style="background-image:url(\'' + im.src + '\')"></span>' : '<span class="d-slot-th">No photo</span>';
   return '<div class="d-slot">' + th + '<div>' +
     '<div class="d-row"><label class="aic-btn aic-btn-secondary d-file" style="height:34px">' + (im ? "Replace" : "Add " + label) +
-      '<input type="file" accept="image/*" data-upload="' + key + '" aria-label="Upload ' + esc(label) + '"></label>' +
+      '<input type="file" accept="image/*,.jpg,.jpeg,.jfif,.pjpeg,.pjp" data-upload="' + key + '" aria-label="Upload ' + esc(label) + '"></label>' +
       (im ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="crop" data-key="' + key + '" style="height:34px">Crop</button><button class="aic-btn aic-btn-quiet" type="button" data-act="img-rm" data-key="' + key + '">Remove</button>' : '') + '</div>' +
     (im ? '<div class="d-zoom"><span>Zoom</span><input type="range" min="1" max="3" step="0.01" value="' + (im.zoom || 1) + '" data-zoom="' + key + '" aria-label="Zoom ' + esc(label) + '"></div>' : '') +
     '<p class="d-slot-info" data-slotinfo="' + key + '"></p></div></div>';
@@ -1746,7 +1763,7 @@ function partnerPanel(){
     (place === "footer" ? field("Footer label", "fields.partnerLabel", {ph:"In partnership with", max:32}) : "") +
     list.map((lg, i) => '<div class="d-sub-card"><header><b>Logo ' + (i + 1) + '</b><button class="d-x" type="button" data-act="partner-rm" data-i="' + i + '" aria-label="Remove logo ' + (i + 1) + '">×</button></header>' +
       '<div class="d-slot"><span class="d-slot-th" style="' + (lg ? "background:" + ground + " url('" + lg.src + "') center/70% no-repeat" : "") + '">' + (lg ? "" : "No logo") + '</span><div>' +
-      '<label class="aic-btn aic-btn-secondary d-file" style="height:34px">' + (lg ? "Replace" : "Add logo") + '<input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" data-upload="partners.' + i + '" aria-label="Upload partner logo ' + (i + 1) + '"></label>' +
+      '<label class="aic-btn aic-btn-secondary d-file" style="height:34px">' + (lg ? "Replace" : "Add logo") + '<input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg,image/pjpeg,.jpg,.jpeg,.jfif,.pjpeg,.pjp" data-upload="partners.' + i + '" aria-label="Upload partner logo ' + (i + 1) + '"></label>' +
       (lg ? '<div style="margin-top:8px">' + seg("tone." + i, [["original","Original"],["white","White"],["black","Black"]], lg.tone || "original") + '</div>' : '') + '</div></div>' +
       (lg ? field("Organization name (alt text)", "fields.partners." + i + ".name", {max:60}) : '') + '</div>').join("") +
     (list.length < 3 ? '<button class="aic-btn aic-btn-secondary" type="button" data-act="partner-add">Add partner logo</button>' : '') +
@@ -1966,8 +1983,11 @@ async function create(p){
 // "Upload a graphic": the chosen file becomes a new post, named after the file.
 async function createUpload(file){
   try{
+    const name = file && file.name;
+    file = await asImage(file);
+    if(!file) throw new Error(NOT_IMAGE);
     const img = await loadOriginal(file);
-    const p = blankUpload(img, file.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "));
+    const p = blankUpload(img, name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "));
     // open on the format that matches the file's shape, if any
     await create(p);
     const same = sameShape(img).filter(k => formats(p).includes(k));
@@ -2027,7 +2047,7 @@ function renderTplEditor(){
       const im = d.bg[k], o = FORMATS[k].out, ok = im && im.w ? Math.abs(im.w / im.h - o[0] / o[1]) / (o[0] / o[1]) < 0.01 : true;
       return '<div class="d-bgrow"><span class="d-slot-th" style="' + (im ? "background-image:url('" + esc(im.src) + "')" : "") + '">' + (im ? "" : "None") + '</span>' +
         '<div><b>' + FMT_LABEL[k] + '</b><small>' + o[0] + ' × ' + o[1] + ' px' + (im && im.w ? ' · yours ' + im.w + ' × ' + im.h + (ok ? '' : ', wrong shape: it will be cropped') : (k === mainBg(d) ? '' : ' · borrows the main one')) + '</small></div>' +
-        '<div class="d-row"><label class="aic-btn aic-btn-secondary d-file" style="height:32px">' + (im ? "Replace" : "Upload") + '<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-tpl-upload="' + k + '" aria-label="Background for ' + FMT_LABEL[k] + '"></label>' +
+        '<div class="d-row"><label class="aic-btn aic-btn-secondary d-file" style="height:32px">' + (im ? "Replace" : "Upload") + '<input type="file" accept="image/png,image/jpeg,image/pjpeg,.jpg,.jpeg,.jfif,.pjpeg,.pjp,image/webp,image/gif" data-tpl-upload="' + k + '" aria-label="Background for ' + FMT_LABEL[k] + '"></label>' +
         (im ? '<button class="d-x" type="button" data-act="tpl-bg-rm" data-k="' + k + '" aria-label="Remove ' + FMT_LABEL[k] + ' background">×</button>' : '') + '</div></div>';
     }).join("") +
     '<p class="d-hint" style="margin-top:8px">Upload one for the feed at least. Any format without its own background borrows the main one and crops it to fit.</p></div>';
@@ -2047,7 +2067,7 @@ function renderTplPreview(){
   tplRoot.render(h(A.TemplatePost, sample));
 }
 async function tplBg(k, file){
-  try{ tplDraft.bg[k] = await loadOriginal(file); renderTplEditor(); }
+  try{ tplDraft.bg[k] = await loadOriginal(await asImage(file)); renderTplEditor(); }
   catch(e){ toast(e.message); }
 }
 async function saveTpl(){
